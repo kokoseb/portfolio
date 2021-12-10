@@ -1,0 +1,183 @@
+---
+title: "Lab 04 - La Quinta is Spanish for next to Denny's, Pt. 1"
+author: "Brenna Kokosenski"
+date: "Oct 6, 2021"
+output: html_document
+---
+This document is based off of Lab 4 in Data Science in a Box, instructions for which are given at https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-04/lab-04-viz-sp-data.html
+The purpose of this lab is to test the validity of  Mitch Hedberg's joke that La Quinta is Spanish for "next to Denny's"
+
+### Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse) 
+library(dsbox) 
+```
+
+```{r load-data, message = FALSE}
+library(readr)
+states <- read_csv("https://raw.githubusercontent.com/rstudio-education/datascience-box/master/course-materials/starters/lab/lab-04-viz-sp-data/data/states.csv")
+```
+
+### Exercise 1
+#Dimensions of Denny's Dataset
+```{r}
+nrow(dennys) # obtain the number of rows
+ncol(dennys) # obtain the number of columns
+#view(dennys) #open the Denny's dataset in a new tab
+```
+The Denny's data set contains 1643 rows and 6 columns. Each row represents a different Denny's location. Variables studied are the address, city, state, zip code, longitude, and latitude of the specific Denny's location.
+
+
+### Exercise 2
+#Dimensions of La Quinta's Dataset
+```{r}
+nrow(laquinta) # obtain the number of rows
+ncol(laquinta) # obtain the number of columns
+#view(laquinta) #open the La Quinta's dataset in a new tab
+```
+The Denny's data set contains 909 rows and 6 columns. Each row represents a different La Quinta's location. Variables studied are the address, city, state, zip code, longitude, and latitude of the specific La Quinta's location.
+
+
+### Exercise 3
+According to the Denny's website, there are no Denny's locations outside of the US. According to the La Quinta website, La Quinta offers hotels across North, Central, and South America; not just in the United States. 
+
+
+### Exercise 4
+1. You could make a new data set and filter to only the US states. If you have less rows in this new data set than in the original, there are locations outside the US.
+2. If you know the latitude and longitude ranges for the US, you could filter to only those in that range.
+3. You could also do something similar to #2 but with zip codes.
+
+
+### Exercise 5
+
+```{r}
+dennys %>%
+  filter(!(state %in% states$abbreviation)) #filter for states that are NOT in the US
+```
+Since this data set contains zero rows, there are no Denny's locations outside the US
+
+### Exercise 6
+Add a country column to the Denny's data set:
+```{r}
+dennys %>%
+  mutate(country = "United States")
+
+```
+
+
+
+
+### Exercise 7
+According to https://www.wyndhamhotels.com/laquinta/locations, other locations are in Canada, Mexico, New Zealand, Honduras, Turkey, United Arab Emirates, Chile, and Colombia. 
+
+### Exercise 8
+Add a column for country labels. It appears that there is no data for the New Zealand, Turkey, Chile, or United Arab Emirates locations in the data set.
+```{r}
+laquintas <-laquinta %>%
+  mutate(country = case_when(
+    state %in% state.abb     ~ "United States",
+    state %in% c("ON", "BC") ~ "Canada",
+    state == "ANT"           ~ "Colombia",
+    state %in% c("AG","CH","VE","PU", "SL","NL", "QR") ~ "Mexico",
+   state == "FM"           ~ "Honduras" 
+  
+  ))
+```
+
+Filter for La Quinta locations in the US.
+```{r}
+laquintas <- laquintas %>%
+  filter(country == "United States")
+```
+
+### Exercise 9
+Determine which state has the most Denny's. 
+```{r}
+dennys %>%
+  #count the number of Denny's in each state, then arrange from most to least
+  count(state, sort=TRUE) %>%
+  #Join Denny's data with state data
+  inner_join(states, by = c("state" = "abbreviation"))
+```
+California has the most Denny's (403), Delaware has the least (1)
+
+Determine which state has the most La Quinta locations
+```{r}
+laquintas %>%
+  count(state, sort=TRUE)
+```
+
+Texas has the most La Quinta locations (237), Maine has the least (1)
+
+The areas that have the greatest numbers of both Denny's and La Quintas seem to be popular places to travel or places with large populations. This is not really surprising.
+
+### Exercise 10
+
+```{r}
+dennys %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(per_sq_mile=n/area) %>% arrange(-per_sq_mile)
+```
+
+Combine the two data sets into one dataframe. 
+First, add an identifier variable.
+```{r}
+denny <- dennys %>%
+  mutate(establishment = "Denny's")
+laquinta <- laquintas %>%
+  mutate(establishment = "La Quinta")
+```
+
+Now, bind the two data sets 
+```{r}
+dn_lq <- bind_rows(denny, laquinta)
+```
+
+Plot locations of the establishments
+```{r}
+ggplot(dn_lq, mapping = aes(x = longitude, y = latitude, color = establishment)) +
+  geom_point(alpha=.4)+
+labs(
+    x = "Longitude",
+    y = "Latitude",
+    title = "Comparison of Denny's and La quinta Locations",
+    subtitle= "In the United States"
+    )
+```
+
+### Exercise 11
+Filter for only locations in North Carolina and replot
+```{r}
+dn_lq_nc <- dn_lq %>%
+  filter(state=="NC")
+
+ggplot(dn_lq_nc, mapping = aes(x = longitude, y = latitude, color = establishment)) +
+  geom_point(alpha=.6)+
+labs(
+    x = "Longitude",
+    y = "Latitude",
+    title = "Comparison of Denny's and La quinta Locations",
+    subtitle= "In North Carolina"
+    )
+```
+For the most part, the La Quintas appear to be close to a Denny's locations, so it appears that Mitch Hedgebergs joke holds true here.
+
+### Exercise 12
+Filter for only locations in Texas and re-plot
+```{r}
+dn_lq_tx <- dn_lq %>%
+  filter(state=="TX")
+
+ggplot(dn_lq_tx, mapping = aes(x = longitude, y = latitude, color = establishment)) +
+  geom_point(alpha=.4)+
+labs(
+    x = "Longitude",
+    y = "Latitude",
+    title = "Comparison of Denny's and La quinta Locations",
+    subtitle= "In Texas"
+    )
+```
+
+The joke does not hold true here, there are many La Quinta locations that do not appear to be close to a Denny's location.

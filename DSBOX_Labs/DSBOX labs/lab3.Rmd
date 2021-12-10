@@ -1,0 +1,112 @@
+---
+title: "DSBox lab 3"
+author: "Brenna Kokosenski"
+output: html_notebook
+---
+
+The lab is from https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-03/lab-03-nobel-laureates.html. The goal of this lab is to gain experience with data wrangling and visualization
+
+In January 2017, Buzzfeed published an article on why Nobel laureates show immigration is so important for American science. You can read the article here; https://www.buzzfeednews.com/article/peteraldhous/immigration-and-science. In the article they show that while most living Nobel laureates in the sciences are based in the US, many of them were born in other countries. This is one reason why scientific leaders say that immigration is vital for progress. In this lab we will work with the data from this article to recreate some of their visualizations as well as explore new questions.
+
+Since this lab is not done in a group, we will skip the GitHub part of the lab
+
+##Packages
+```{r}
+library(tidyverse)
+```
+
+##Data
+```{r}
+nobel <- read_csv("https://raw.githubusercontent.com/rstudio-education/datascience-box/main/course-materials/lab-instructions/lab-03/data/nobel.csv")
+```
+
+#Exercise 1
+How many observations and how many variables are in the dataset? Use inline code to answer this question. What does each row represent?
+```{r}
+nrow(nobel)
+```
+```{r}
+ncol(nobel)
+```
+there are 26 variables and 935 observations. Each row represents 1 Nobel Prize winner
+
+#Exercise 2
+Create a new data frame called nobel_living that filters for 
+laureates for whom country is available
+laureates who are people as opposed to organizations (organizations are denoted with "org" as their gender)
+laureates who are still alive (their died_date is NA)
+Confirm that once you have filtered for these characteristics you are left with a data frame with 228 observations, once again using inline code.
+
+```{r}
+nobel_living <- nobel %>%
+  filter(country != " ") %>%
+  filter(gender !="org") #%>%
+  #filter(died_date == "NA") cannot figure out the died date 
+```
+
+First, we’ll create a new variable to identify whether the laureate was in the US when they won their prize. We’ll use the mutate() function for this. The following pipeline mutates the nobel_living data frame by adding a new variable called country_us. We use an if statement to create this variable. The first argument in the if_else() function we’re using to write this if statement is the condition we’re testing for. If country is equal to "USA", we set country_us to "USA". If not, we set the country_us to "Other".
+
+```{r}
+nobel_living <- nobel_living %>%
+  mutate(
+    country_us = if_else(country == "USA", "USA", "Other")
+  )
+```
+
+Next, we will limit our analysis to only the following categories: Physics, Medicine, Chemistry, and Economics
+```{r}
+nobel_living_science <- nobel_living %>%
+  filter(category %in% c("Physics", "Medicine", "Chemistry", "Economics"))
+```
+
+For the next exercise work with the nobel_living_science data frame you created above. This means you’ll need to define this data frame in your R Markdown document, even though the next exercise doesn’t explicitly ask you to do so
+
+#Exercise 3
+Create a faceted bar plot visualizing the relationship between the category of prize and whether the laureate was in the US when they won the nobel prize. Interpret your visualization, and say a few words about whether the Buzzfeed headline is supported by the data.
+
+Your visualization should be faceted by category.
+For each facet you should have two bars, one for winners in the US and one for Other.
+Flip the coordinates so the bars are horizontal, not vertical.
+
+```{r}
+ggplot(data=nobel_living_science, aes(x=category, y= country_us))+
+  geom_bar(stat = 'identity')+
+  facet_wrap(~country_us)
+```
+Im not certain that I actually graphed what I was supposed to. I am confused about what this exercise was asking for. I also do not know how to make the bars horizontal
+
+#Exercise 4
+Create a new variable called born_country_us that has the value "USA" if the laureate is born in the US, and "Other" otherwise. How many of the winners are born in the US?
+```{r}
+df1 <- nobel %>%
+  mutate(
+    born_country_us = if_else(born_country == "USA", "USA", "Other")
+  )
+```
+
+```{r}
+df2<- nobel %>%
+  filter(born_country == "USA")
+nrow(df1)
+```
+271 winners were born in the US
+
+#Exercise 5
+Add a second variable to your visualization from Exercise 3 based on whether the laureate was born in the US or not. Based on your visualization, do the data appear to support Buzzfeed’s claim? Explain your reasoning in 1-2 sentences.
+
+Since I was unable to complete exercise 3, I am not even going to attempt this exercise
+
+#Exercise 6
+In a single pipeline, filter for laureates who won their prize in the US, but were born outside of the US, and then create a frequency table (with the count() function) for their birth country (born_country) and arrange the resulting data frame in descending order of number of observations for each country. Which country is the most common?
+```{r}
+df3 <- df1 %>%
+  filter(born_country_us == "Other") %>%
+  filter(country=="USA")%>%
+  
+  count(born_country)%>%
+  arrange(n)
+df3
+```
+
+
+

@@ -1,0 +1,96 @@
+---
+title: "DSBOX lab 7"
+author: "Brenna Kokosenski"
+output: html_notebook
+---
+
+Source: https://rstudio-education.github.io/datascience-box/course-materials/lab-instructions/lab-07/lab-07-simpsons-paradox.html
+
+A study of conducted in Whickham, England recorded participants’ age, smoking status at baseline, and then 20 years later recorded their health outcome. In this lab we analyse the relationships between these variables, first two at a time, and then controlling for the third.
+
+Learning goals:
+Visualising relationships between variables
+Discovering Simpson’s paradox via visualisations
+
+##Packages
+```{r}
+library(tidyverse) 
+library(mosaicData) 
+```
+
+##Data
+The dataset we’ll use is called Whickham from the mosaicData package. You can find out more about the dataset by inspecting their documentation, which you can access by running ?Whickham in the Console or using the Help menu in RStudio to search for Whickham.
+
+#Exercise 1
+What type of study do you think these data come from: observational or experiment? Why?
+
+This data is likely observational. Observational data would involve recording the smoking status and healt conditions. Experimental data would involve changing the smoking habits of individuals. It is less likely that the study required subjects to change their smoking habits for 20 years as that would likely not be feasible.
+
+#Exercise 2
+How many observations are in this dataset? What does each observation represent?
+```{r}
+nrow(Whickham)
+view(Whickham)
+```
+each observation represents a different person studied
+
+#Exercise 3 
+How many variables are in this dataset? What type of variable is each? Display each variable using an appropriate visualization.
+```{r}
+ncol(Whickham)
+```
+there are three variables. Outcome and smoker are character variables.Age is a numeric variable. 
+```{r}
+df1 <- Whickham %>%
+  count (outcome)
+df1
+```
+```{r}
+df2 <- Whickham %>%
+  count (smoker)
+df2
+```
+
+```{r}
+df3 <- Whickham %>%
+  count (age)
+df3
+```
+
+#Exercise 4
+What would you expect the relationship between smoking status and health outcome to be?
+
+I would expect smokers to be less healthy than non-smokers
+
+#Exercise 5
+Create a visualization depicting the relationship between smoking status and health outcome. Briefly describe the relationship, and evaluate whether this meets your expectations. Additionally, calculate the relevant conditional probabilities to help your narrative. Here is some code to get you started:
+```{r}
+Whickham %>%
+  count(smoker, outcome)
+```
+
+It appears that more non-smokers died than smokers, the opposite of what I thought. However, I do not trust this conclusion sine age is not factored in. It is possible that many of the people who do not smoke simply died of old age.
+
+#Exercise 6
+Create a new variable called age_cat using the following scheme:
+age <= 44 ~ "18-44"
+age > 44 & age <= 64 ~ "45-64"
+age > 64 ~ "65+"
+```{r}
+df4 <- Whickham %>%
+  mutate(age_cat= case_when(age < 44|age==44 ~ "18-44",
+  age>44|age<64 ~ "45-64",
+age > 64 ~ "65+"))
+           
+```
+
+#Exercise 7
+Re-create the visualization depicting the relationship between smoking status and health outcome, faceted by age_cat. What changed? What might explain this change? Extend the contingency table from earlier by breaking it down by age category and use it to help your narrative.
+```{r}
+df4 %>%
+  count(smoker, age_cat, outcome)
+  
+```
+I cannot figure out why this table does not include the 65+ age group. It still appears that smoking did not negatively affect health. 
+
+Considering this lab was supposed to show Simpson's paradox, where the results flip as more variables are added in, I believe I may have done something wrong
