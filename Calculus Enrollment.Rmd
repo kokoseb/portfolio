@@ -1,0 +1,86 @@
+---
+title: "Calculus Exploration"
+author: "Brenna Kokosenski"
+output: html_document
+---
+The purpose of this project is to determine the relationship between fall calculus enrollment and spring calculus enrollment within a given academic year. 
+
+##Load Packages
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+##Read Data
+```{r}
+library(readr)
+df1 <- read_csv("CU_ACAD_DEPT_WHEN_OFF_ENRL_22740.csv", 
+    skip = 1) %>% clean_names()
+```
+
+## Data manipulation
+Filter the data to only the course title, section number, component, course id, the term,and total enrollment 
+```{r}
+df2 <- df1 %>%
+  filter(title=="Calculus I"|title=="Calculus II",component=="LEC") %>% 
+group_by(title,term_8)%>% 
+  select(title,section,component,course_id,term_8,tot_enrl) %>% 
+  arrange(term_8)
+```
+
+Filter to only Calculus 1 and 2, summarize enrollment of all sections of a given course in the given term, then arrange by term.
+```{r}
+df3 <- df2 %>%
+  filter(title=="Calculus I"|title=="Calculus II",component=="LEC") %>%
+  group_by(title,term_8)%>% 
+  select(title,section, course_id,term_8,tot_enrl)%>%
+  summarize(sum_enroll = sum(tot_enrl)) %>%
+  arrange(term_8)
+```
+
+Separate the column that displays term in season and year into two separate columns, then filter for only the fall and spring terms to remove data from the summer terms
+```{r}
+df4 <- df3 %>%
+  separate(term_8,c("term","year"), sep=" ",convert=TRUE)%>%
+  filter(term== "Fall"| term=="Spring")
+```
+
+Mutate the year column to see only the last two numbers of the year (14 instead of 2014, for example). Create a column that represents the academic year associated with each term
+```{r}
+df5 <- df4 %>%
+  mutate(year=(year-2000)) %>%
+  mutate(academic_year=case_when(term=="Fall"~str_c(year, "-", year+1),
+  term=="Spring" ~ str_c(year-1, "-", year)))
+
+```
+
+"Rotate" the data table so the variables are academic year, calc 1 fall, calc 2 fall, calc 1 spring, and calc 2 spring. Create a graph of spring calc 2 enrollment versus fall calc 1 enrollment
+```{r}
+df6 <- df5 %>%
+  pivot_wider(academic_year, names_from = c(title,term), values_from = sum_enroll)%>%
+  clean_names() %>%
+  #account for sections 1&3 being counted twice in Spring 2020
+  mutate(calculus_ii_spring=case_when(academic_year=="19-20"~ (calculus_ii_spring-74-52),
+                   academic_year!="19-20"~ (calculus_ii_spring))) %>% 
+arrange(academic_year) 
+  
+  
+df6 %>%                      
+filter(calculus_ii_spring>0)%>%
+  ggplot(aes(x=calculus_i_fall,
+             y= calculus_ii_spring))+                      
+  geom_point()+     
+  geom_smooth(method=lm)+
+  geom_vline(xintercept=tail(df6$calculus_i_fall,1))+
+  theme_minimal()+
+  labs(
+    x = "Fall Calc 1 Enrollment",
+    y = "Spring Calc 2 Enrollment",
+    title = "Comparison of enrollment in Calculus classes",
+    subtitle= "In a given academic year",
+    caption= "Note: verticle black line represents level of Calculus 1 enrollment in Fall 2021")
+ 
+
+```
+
+Based on this graph, there will be somewhere between 350 and 385 students enrolled in Calc 2 in the spring of 2022.
