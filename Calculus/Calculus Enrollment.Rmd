@@ -5,6 +5,8 @@ output: html_document
 ---
 The purpose of this project is to determine the relationship between fall calculus enrollment and spring calculus enrollment within a given academic year. 
 
+Skills used: Visualizing data using a scatterplot, manipulating data using dplyr, pivot_wider 
+
 ##Load Packages
 ```{r}
 library(tidyverse)
@@ -83,4 +85,4 @@ filter(calculus_ii_spring>0)%>%
 
 ```
 
-Based on this graph, there will be somewhere between 350 and 385 students enrolled in Calc 2 in the spring of 2022.
+Based on this graph, we expect there will be somewhere between 350 and 385 students enrolled in Calc 2 in the spring of 2022.
