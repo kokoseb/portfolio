@@ -69,7 +69,7 @@ countries <- c(
   #"Fiji",
   #"India"
   #"Argentina"
-  #original were china, france,UK,US, Turkey
+  #note: remove the hashtag to select the country, add a hastag to unselect. The full list of countries available for analysis are listed in the Appendix
 )
 ```
 
