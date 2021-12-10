@@ -1,0 +1,202 @@
+---
+title: "Daily COVID-19 Deaths by State"
+author: "Brenna Kokosenski"
+output: html_document
+---
+The following project visualizes COVID-19 death in selected US states from two sources of data. 
+
+adapted from https://raw.githubusercontent.com/rstudio-education/datascience-box/master/course-materials/application-exercises/ae-01b-covid/covid.Rmd
+
+adapted by Brenna Kokosenski
+
+## Introduction
+
+Countries around the world are responding to an outbreak of respiratory illness caused by a novel coronavirus, COVID-19.
+
+The outbreak first started in Wuhan, China, but cases have been identified in a growing number of other locations internationally, including the United States.
+
+In this report we will explore the trajectory of deaths in a number of states in the US..
+
+The data come from the New York Times and was retrieved from GitHub from https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv. To load the data into RStudio, go to File -> Import Dataset -> From text (readr). Copy in the previously listed URL and click Update. You should next change the variable name. Here, we will use the variable name us_states. Copy the code in the preview box, and paste it in the next section of code so you do not have to import the data each time you run this code.
+
+The overall goal of this report is to create a plot of covid deaths per day as a function of date for selected states
+
+For our analysis, we will use the following packages for data wrangling and visualisation.
+
+-   **tidyverse** for data wrangling and visualization
+-   **lubridate** package for handling dates
+-   **glue** package for constructing text strings
+-   **scales** package for formatting axis labels
+-   **ggrepel** package for pretty printing of country labels
+-   **readr** package for reading the csv data file
+
+
+
+```{r load-packages, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(lubridate)
+library(glue)
+library(scales)
+library(ggrepel)
+library(DT)
+#code from code preview, reads file to load data
+library(readr)
+us_states <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+```
+
+## Data prep
+
+The data frame called us_states provides a daily summary of the Coronavirus (COVID-19) cases by state.
+Each row in the data frame represents a state.
+
+Note that the data provides daily number of deaths and cases.
+For this report, we will focus on the deaths.
+
+We will start by making our selection for the states we want to explore.
+
+
+```{r select-states}
+states <- c(
+  "Washington",
+  "Florida",
+  "New York",
+  "Connecticut",
+  "Massachusetts",
+  "New Jersey",
+  "Texas",
+  "California",
+  "Illinois",
+  "Idaho"
+)
+
+```
+
+In the following code chunk we filter the data frame for deaths in the states we specified above and select the columns representing date, state, and deaths.
+
+
+```{r}
+state_data <- us_states %>%
+  
+# filter to just the states specified in states  
+filter(state %in% states)  %>%
+  
+#select the columns for date, state, and number of deaths
+select(date, state, deaths) %>%
+  
+# arrange by date in ascending order
+arrange(date)
+
+```
+
+
+## Visualisation
+
+The following visualization shows the number of deaths vs. the date in each state. The as-of date will be based on when the code is run. The data source appears to be updated daily, so the as of date should be the day before the current date. 
+
+```{r visualise, warning=FALSE}
+ggplot(data = state_data,
+       mapping = aes(x = date, 
+                     y = deaths, 
+                     color = state, 
+                     )) +
+  # represent deaths with lines
+  geom_line(size = 0.7, alpha = 0.8)+
+  
+  # add points to line endings, makes the lines appear thicker
+  geom_point(data = state_data)+
+  
+  #better formatting for y-axis
+  scale_y_continuous(labels = label_comma()) +
+  
+  #use minimal theme
+  theme_minimal() +
+  
+  #customize the labels, don't forget to update as of date
+  labs(
+    x = "Date",
+    y = "Number of deaths",
+    title = "Number of deaths from COVID-19, selected states",
+    subtitle = glue("Data as of September 25, 2021" ), 
+    caption = "Source: https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+```
+
+It appears that the data provided from New York Times is cumulative since the number of deaths for yesterday is so high. It is unlikely that over 60,000 people died of COVID yesterday in a single state. It is interesting to see the differences in cumulative death for different states, so we will keep this graph. However, we will use data obtained from the Center for Disease Control (CDC) to create the graph of individual deaths per day.
+
+
+## Part II: CDC Data
+
+## CDC Data Prep
+The CDC data was obtained from https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36/data.Follow this link, then click Export -> CSV for Excel. The result will be a unicode text file, save the file as an Excel file. Then go to File -> Import Dataset -> From Excel -> Browse. Find your file and rename and save the code as described earlier.
+
+In order to update this data in the future, a new Excel file will need to be downloaded.
+
+```{r}
+library(readxl) #readxl reads the Excel file
+covid_data <- read_excel("U:/DS241/cdc covid death data.xlsx")
+```
+
+
+Since the CDC data lists states using their abbreviations, we will need to make a new variable to select the desired states. We will add CDC to the label to differentiate between datasets.Note that New York City data is reported separately from the rest of the New York data.
+
+```{r select}
+states_CDC <- c(
+  "WA",
+  "FL",
+  "NY",
+  "NYC",
+  "CT",
+  "MA",
+  "NJ",
+  "TX",
+  "CA",
+  "IL",
+  "ID"
+)
+
+```
+
+We will once again filter the dataset for only the specified states. In the following code chunk we filter the data frame for deaths in the states we specified above and select the columns representing date, state, and new deaths.
+
+```{r}
+CDC <- covid_data %>%
+  
+#filter for states selected above
+filter(state %in% states_CDC)  %>%
+
+#select only the desired columns
+select(submission_date,state, new_death)%>% 
+
+#arrange by date in ascending order 
+arrange(submission_date)
+
+```
+
+
+## CDC Visualisation
+
+The following visualisation shows the number of deaths vs. the date in each state. The as-of date will be the day before the Excel spreadsheet was exported from the CDC website.
+
+```{r}
+ggplot(data = CDC,
+       mapping = aes(x =  submission_date, 
+                     y = new_death, 
+                     color = state, 
+                     )) +
+  # represent deaths with lines
+  geom_line(size = 0.7, alpha = 0.8)+
+  
+  #better formatting for y-axis
+  scale_y_continuous(labels = label_comma()) +
+  
+  #use minimal theme
+  theme_minimal() +
+  
+  #customize the labels
+  labs(
+    x = "Date",
+    y = "Number of deaths",
+    title = "Number of deaths from COVID-19, selected states",
+    subtitle = glue("Data as of September 22, 2021" ),
+    caption = "Source: https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36/data")
+```
