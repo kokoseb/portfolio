@@ -179,7 +179,7 @@ arrange(submission_date)
 
 ## CDC Visualisation
 
-The following visualisation shows the number of deaths vs. the date in each state. The as-of date will be the day before the Excel spreadsheet was exported from the CDC website.
+The following visualization shows the number of deaths vs. the date in each state. The as-of date will be the day before the Excel spreadsheet was exported from the CDC website.
 
 ```{r}
 ggplot(data = CDC,
