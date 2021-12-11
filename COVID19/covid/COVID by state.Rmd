@@ -40,12 +40,16 @@ library(glue)
 library(scales)
 library(ggrepel)
 library(DT)
-#code from code preview, reads file to load data
+```
+
+
+## Data Prep
+read the data:
+```{r}
 library(readr)
 us_states <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
 ```
 
-## Data prep
 
 The data frame called us_states provides a daily summary of the Coronavirus (COVID-19) cases by state.
 Each row in the data frame represents a state.
@@ -124,16 +128,16 @@ ggplot(data = state_data,
 It appears that the data provided from New York Times is cumulative since the number of deaths for yesterday is so high. It is unlikely that over 60,000 people died of COVID yesterday in a single state. It is interesting to see the differences in cumulative death for different states, so we will keep this graph. However, we will use data obtained from the Center for Disease Control (CDC) to create the graph of individual deaths per day.
 
 
-## Part II: CDC Data
+### Part II: CDC Data
 
 ## CDC Data Prep
-The CDC data was obtained from https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36/data.Follow this link, then click Export -> CSV for Excel. The result will be a unicode text file, save the file as an Excel file. Then go to File -> Import Dataset -> From Excel -> Browse. Find your file and rename and save the code as described earlier.
+The CDC data was obtained from https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36/data. Follow this link, then click Export -> CSV for Excel. The result will be a unicode text file, save the file as an Excel file. Then go to File -> Import Dataset -> From Excel -> Browse. Find your file and rename and save the code as described earlier.
 
 In order to update this data in the future, a new Excel file will need to be downloaded.
 
 ```{r}
 library(readxl) #readxl reads the Excel file
-covid_data <- read_excel("U:/DS241/cdc covid death data.xlsx")
+covid_data <- read_excel("cdc covid death data.xlsx")
 ```
 
 
