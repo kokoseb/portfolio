@@ -24,9 +24,13 @@ df1 <- read_csv("CU_ACAD_DEPT_WHEN_OFF_ENRL_22740.csv",
 Filter the data to only the course title, section number, component, course id, the term,and total enrollment 
 ```{r}
 df2 <- df1 %>%
+  #filter to only calculus I and II lecture sections
   filter(title=="Calculus I"|title=="Calculus II",component=="LEC") %>% 
+  #group by course title ans term
 group_by(title,term_8)%>% 
+  #select only the desired variables
   select(title,section,component,course_id,term_8,tot_enrl) %>% 
+  #arrange based on term
   arrange(term_8)
 ```
 
@@ -44,6 +48,7 @@ Separate the column that displays term in season and year into two separate colu
 ```{r}
 df4 <- df3 %>%
   separate(term_8,c("term","year"), sep=" ",convert=TRUE)%>%
+  #filter to only fall and spring term data
   filter(term== "Fall"| term=="Spring")
 ```
 
