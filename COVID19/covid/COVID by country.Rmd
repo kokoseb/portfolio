@@ -74,7 +74,7 @@ countries <- c(
 ```
 
 In the following code chunk we filter the data frame for deaths in the countries we specified above and calculate cumulative number of deaths.
-We will only visualise data since 10th confirmed death.
+We will only visualize data since 10th confirmed death.
 
 ```{r prep-country-data}
 country_data <- coronavirus %>%
