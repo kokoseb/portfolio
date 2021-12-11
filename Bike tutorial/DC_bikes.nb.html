@@ -1751,340 +1751,699 @@ pre code {
 <p>###Packages Load the packages we need for this tutorial using the chunk below</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KHRpZHltb2RlbHMpXG5saWJyYXJ5KGRzYm94KVxubGlicmFyeShyZWFkeGwpXG5cbmBgYCJ9 -->
+<pre class="r"><code>library(tidyverse)
+library(tidymodels)
+library(dsbox)
+library(readxl)
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>###Data The data include daily bike rental counts (by members and casual users) of Capital Bikeshare in Washington, DC in 2011 and 2012 as well as weather information on these days. The data is contained in the dsbox package and is called dcbikeshare.</p>
 <p>The original data sources are <a href="http://capitalbikeshare.com/system-data" class="uri">http://capitalbikeshare.com/system-data</a> and <a href="http://www.freemeteo.com" class="uri">http://www.freemeteo.com</a>.</p>
+<p>Since the file is too large to upload to GitHub, you will need to download the file from the website listed above and edit the code to correspond with where the file is stored on your machine</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmlrZXMgPC0gcmVhZF9leGNlbChcIlU6L0RTMjQxLzIwMjAwOC1jYXBpdGFsYmlrZXNoYXJlLXRyaXBkYXRhLnhsc3hcIilcbmBgYCJ9 -->
+<pre class="r"><code>bikes &lt;- read_excel(&quot;U:/DS241/202008-capitalbikeshare-tripdata.xlsx&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <p>###Recode Data</p>
 <p>##Recode Season Recode the season variable to be a factor with meaningful level names as outlined in the codebook, with spring as the baseline level.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICBzZWFzb24gPSBjYXNlX3doZW4oXG4gICAgICBzZWFzb24gPT0gMSB+IFwid2ludGVyXCIsXG4gICAgICBzZWFzb24gPT0gMiB+IFwic3ByaW5nXCIsXG4gICAgICBzZWFzb24gPT0gMyB+IFwic3VtbWVyXCIsXG4gICAgICBzZWFzb24gPT0gNCB+IFwiZmFsbFwiXG4gICAgKSxcbiAgICBzZWFzb24gPSBmY3RfcmVsZXZlbChzZWFzb24sIFwic3ByaW5nXCIsIFwic3VtbWVyXCIsIFwiZmFsbFwiLCBcIndpbnRlclwiKVxuICApXG5gYGAifQ== -->
-<pre class="r"><code>dcbikeshare &lt;- dcbikeshare %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICBzZWFzb24gPSBjYXNlX3doZW4oXG4gICAgICBzZWFzb24gPT0gMSB+IFxcd2ludGVyXFwsXG4gICAgICBzZWFzb24gPT0gMiB+IFxcc3ByaW5nXFwsXG4gICAgICBzZWFzb24gPT0gMyB+IFxcc3VtbWVyXFwsXG4gICAgICBzZWFzb24gPT0gNCB+IFxcZmFsbFxcXG4gICAgKSxcbiAgICBzZWFzb24gPSBmY3RfcmVsZXZlbChzZWFzb24sIFxcc3ByaW5nXFwsIFxcc3VtbWVyXFwsIFxcZmFsbFxcLCBcXHdpbnRlclxcKVxuICApXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+dcbikeshare &lt;- dcbikeshare %&gt;%
   mutate(
     season = case_when(
-      season == 1 ~ &quot;winter&quot;,
-      season == 2 ~ &quot;spring&quot;,
-      season == 3 ~ &quot;summer&quot;,
-      season == 4 ~ &quot;fall&quot;
+      season == 1 ~ \winter\,
+      season == 2 ~ \spring\,
+      season == 3 ~ \summer\,
+      season == 4 ~ \fall\
     ),
-    season = fct_relevel(season, &quot;spring&quot;, &quot;summer&quot;, &quot;fall&quot;, &quot;winter&quot;)
+    season = fct_relevel(season, \spring\, \summer\, \fall\, \winter\)
   )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbXV0YXRlKC4sIHNlYXNvbiA9IGNhc2Vfd2hlbihzZWFzb24gPT0gMSB+IFwid2ludGVyXCIsIHNlYXNvbiA9PSAgOiBcbiAgb2JqZWN0ICdkY2Jpa2VzaGFyZScgbm90IGZvdW5kXG4ifQ== -->
-<pre><code>Error in mutate(., season = case_when(season == 1 ~ &quot;winter&quot;, season ==  : 
-  object &#39;dcbikeshare&#39; not found</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>##Recode holiday and workingday Recode the binary variables holiday and workingday to be factors with levels no (0) and yes (1), with no as the baseline level.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICBob2xpZGF5ID0gaWZlbHNlKGhvbGlkYXkgPT0gMCwgXCJub1wiLCBcInllc1wiKSwgICAgICBcbiAgICBob2xpZGF5ID0gZmN0X3JlbGV2ZWwoaG9saWRheSwgXCJub1wiLCBcInllc1wiKSwgICAgXG4gICAgd29ya2luZ2RheSA9IGlmZWxzZSh3b3JraW5nZGF5ID09IDAsIFwibm9cIiwgXCJ5ZXNcIiksXG4gICAgd29ya2luZ2RheSA9IGZjdF9yZWxldmVsKHdvcmtpbmdkYXksIFwibm9cIiwgXCJ5ZXNcIilcbiAgKVxuYGBgIn0= -->
-<pre class="r"><code>dcbikeshare &lt;- dcbikeshare %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbXV0YXRlKC4sIHNlYXNvbiA9IGNhc2Vfd2hlbihzZWFzb24gPT0gMSB+IFxcd2ludGVyXFwsIHNlYXNvbiA9PSAgOiBcbiAgb2JqZWN0ICdkY2Jpa2VzaGFyZScgbm90IGZvdW5kXG4ifQ== --&gt;
+</code></pre>
+<p>Error in mutate(., season = case_when(season == 1 ~ , season == : object ‘dcbikeshare’ not found</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+##Recode holiday and workingday
+Recode the binary variables holiday and workingday to be factors with levels no (0) and yes (1), with no as the baseline level.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICBob2xpZGF5ID0gaWZlbHNlKGhvbGlkYXkgPT0gMCwgXFxub1xcLCBcXHllc1xcKSwgICAgICBcbiAgICBob2xpZGF5ID0gZmN0X3JlbGV2ZWwoaG9saWRheSwgXFxub1xcLCBcXHllc1xcKSwgICAgXG4gICAgd29ya2luZ2RheSA9IGlmZWxzZSh3b3JraW5nZGF5ID09IDAsIFxcbm9cXCwgXFx5ZXNcXCksXG4gICAgd29ya2luZ2RheSA9IGZjdF9yZWxldmVsKHdvcmtpbmdkYXksIFxcbm9cXCwgXFx5ZXNcXClcbiAgKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+dcbikeshare &lt;- dcbikeshare %&gt;%
   mutate(
-    holiday = ifelse(holiday == 0, &quot;no&quot;, &quot;yes&quot;),      
-    holiday = fct_relevel(holiday, &quot;no&quot;, &quot;yes&quot;),    
-    workingday = ifelse(workingday == 0, &quot;no&quot;, &quot;yes&quot;),
-    workingday = fct_relevel(workingday, &quot;no&quot;, &quot;yes&quot;)
+    holiday = ifelse(holiday == 0, \no\, \yes\),      
+    holiday = fct_relevel(holiday, \no\, \yes\),    
+    workingday = ifelse(workingday == 0, \no\, \yes\),
+    workingday = fct_relevel(workingday, \no\, \yes\)
   )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>##Recode year Recode the yr variable to be a factor with levels 2011 and 2012, with 2011 as the baseline level.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICB5ciA9IGlmZWxzZSh5ciA9PSAwLCBcIjIwMTFcIiwgXCIyMDEyXCIpLFxuICAgIHlyID0gZmN0X3JlbGV2ZWwoeXIsIFwiMjAxMVwiLCBcIjIwMTJcIilcbiAgKVxuYGBgIn0= -->
-<pre class="r"><code>dcbikeshare &lt;- dcbikeshare %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+##Recode year
+Recode the yr variable to be a factor with levels 2011 and 2012, with 2011 as the baseline level.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICB5ciA9IGlmZWxzZSh5ciA9PSAwLCBcXDIwMTFcXCwgXFwyMDEyXFwpLFxuICAgIHlyID0gZmN0X3JlbGV2ZWwoeXIsIFxcMjAxMVxcLCBcXDIwMTJcXClcbiAgKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+dcbikeshare &lt;- dcbikeshare %&gt;%
   mutate(
-    yr = ifelse(yr == 0, &quot;2011&quot;, &quot;2012&quot;),
-    yr = fct_relevel(yr, &quot;2011&quot;, &quot;2012&quot;)
+    yr = ifelse(yr == 0, \2011\, \2012\),
+    yr = fct_relevel(yr, \2011\, \2012\)
   )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>##Recode weathersit Recode the weathersit variable as 1 - clear, 2 - mist, 3 - light precipitation, and 4 - heavy precipitation, with clear as the baseline.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICB3ZWF0aGVyc2l0ID0gY2FzZV93aGVuKFxuICAgICAgd2VhdGhlcnNpdCA9PSAxIH4gXCJjbGVhclwiLFxuICAgICAgd2VhdGhlcnNpdCA9PSAyIH4gXCJtaXN0XCIsXG4gICAgICB3ZWF0aGVyc2l0ID09IDMgfiBcImxpZ2h0IHByZWNpcGl0YXRpb25cIixcbiAgICAgIHdlYXRoZXJzaXQgPT0gNCB+IFwiaGVhdnkgcHJlY2lwaXRhdGlvblwiXG4gICAgKSxcbiAgICB3ZWF0aGVyc2l0ID0gZmN0X3JlbGV2ZWwod2VhdGhlcnNpdCwgXCJjbGVhclwiLCBcIm1pc3RcIiwgXCJsaWdodCBwcmVjaXBpdGF0aW9uXCIsIFwiaGVhdnkgcHJlY2lwaXRhdGlvblwiKVxuICApXG5gYGAifQ== -->
-<pre class="r"><code>dcbikeshare &lt;- dcbikeshare %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+##Recode weathersit
+Recode the weathersit variable as 1 - clear, 2 - mist, 3 - light precipitation, and 4 - heavy precipitation, with clear as the baseline.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICB3ZWF0aGVyc2l0ID0gY2FzZV93aGVuKFxuICAgICAgd2VhdGhlcnNpdCA9PSAxIH4gXFxjbGVhclxcLFxuICAgICAgd2VhdGhlcnNpdCA9PSAyIH4gXFxtaXN0XFwsXG4gICAgICB3ZWF0aGVyc2l0ID09IDMgfiBcXGxpZ2h0IHByZWNpcGl0YXRpb25cXCxcbiAgICAgIHdlYXRoZXJzaXQgPT0gNCB+IFxcaGVhdnkgcHJlY2lwaXRhdGlvblxcXG4gICAgKSxcbiAgICB3ZWF0aGVyc2l0ID0gZmN0X3JlbGV2ZWwod2VhdGhlcnNpdCwgXFxjbGVhclxcLCBcXG1pc3RcXCwgXFxsaWdodCBwcmVjaXBpdGF0aW9uXFwsIFxcaGVhdnkgcHJlY2lwaXRhdGlvblxcKVxuICApXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+dcbikeshare &lt;- dcbikeshare %&gt;%
   mutate(
     weathersit = case_when(
-      weathersit == 1 ~ &quot;clear&quot;,
-      weathersit == 2 ~ &quot;mist&quot;,
-      weathersit == 3 ~ &quot;light precipitation&quot;,
-      weathersit == 4 ~ &quot;heavy precipitation&quot;
+      weathersit == 1 ~ \clear\,
+      weathersit == 2 ~ \mist\,
+      weathersit == 3 ~ \light precipitation\,
+      weathersit == 4 ~ \heavy precipitation\
     ),
-    weathersit = fct_relevel(weathersit, &quot;clear&quot;, &quot;mist&quot;, &quot;light precipitation&quot;, &quot;heavy precipitation&quot;)
+    weathersit = fct_relevel(weathersit, \clear\, \mist\, \light precipitation\, \heavy precipitation\)
   )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Recoding warning At this point, you might wonder what this warning means:</p>
-<p><code>Warning: Unknown levels in</code>f<code>: heavy precipitation</code> This is simply R warning us that while it is possible for the weathersit variable to have the value 4 for heavy precipitation, this never actually occurs in the data. Consequently, the weathersit factor only has three levels.</p>
-<p>###Creating new variables</p>
-<p>##Create raw values for temperature, humidity, and windspeed Calculate raw temperature, feeling temperature, humidity, and windspeed as their values given in the dataset multiplied by the maximum raw values stated in the codebook for each variable. Instead of writing over the existing variables, create new ones called temperature_raw, feeling_temperature_raw, humidity_raw, windspeed_raw.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICB0ZW1wZXJhdHVyZV9yYXcgPSB0ZW1wICogNDEsXG4gICAgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgPSBhdGVtcCAqIDUwLFxuICAgIGh1bWlkaXR5X3JhdyA9IGh1bSAqIDEwMCxcbiAgICB3aW5kc3BlZWRfcmF3ID0gd2luZHNwZWVkICogNjdcbiAgKVxuYGBgIn0= -->
-<pre class="r"><code>dcbikeshare &lt;- dcbikeshare %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Recoding warning
+At this point, you might wonder what this warning means:
+
+`Warning: Unknown levels in `f`: heavy precipitation`
+This is simply R warning us that while it is possible for the weathersit variable to have the value 4 for heavy precipitation, this never actually occurs in the data. Consequently, the weathersit factor only has three levels.
+
+###Creating new variables
+
+##Create raw values for temperature, humidity, and windspeed
+Calculate raw temperature, feeling temperature, humidity, and windspeed as their values given in the dataset multiplied by the maximum raw values stated in the codebook for each variable. Instead of writing over the existing variables, create new ones called temperature_raw, feeling_temperature_raw, humidity_raw, windspeed_raw.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShcbiAgICB0ZW1wZXJhdHVyZV9yYXcgPSB0ZW1wICogNDEsXG4gICAgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgPSBhdGVtcCAqIDUwLFxuICAgIGh1bWlkaXR5X3JhdyA9IGh1bSAqIDEwMCxcbiAgICB3aW5kc3BlZWRfcmF3ID0gd2luZHNwZWVkICogNjdcbiAgKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+dcbikeshare &lt;- dcbikeshare %&gt;%
   mutate(
     temperature_raw = temp * 41,
     feeling_temperature_raw = atemp * 50,
     humidity_raw = hum * 100,
     windspeed_raw = windspeed * 67
   )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>##Check cnt variable Check that the sum of casual and registered adds up to cnt for each record. Do this by creating a new column that takes on the value TRUE if they add up and FALSE if not, and then checking if all values in that column are TRUEs.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShjYXNfcGx1c19yZWcgPSBjYXN1YWwgKyByZWdpc3RlcmVkKSAlPiVcbiAgc3VtbWFyaXNlKGFsbF96ZXJvID0gYWxsKGNhc19wbHVzX3JlZyA9PSBjbnQpKVxuYGBgIn0= -->
-<pre class="r"><code>dcbikeshare %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+##Check cnt variable
+Check that the sum of casual and registered adds up to cnt for each record. Do this by creating a new column that takes on the value TRUE if they add up and FALSE if not, and then checking if all values in that column are TRUEs.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgJT4lXG4gIG11dGF0ZShjYXNfcGx1c19yZWcgPSBjYXN1YWwgKyByZWdpc3RlcmVkKSAlPiVcbiAgc3VtbWFyaXNlKGFsbF96ZXJvID0gYWxsKGNhc19wbHVzX3JlZyA9PSBjbnQpKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+dcbikeshare %&gt;%
   mutate(cas_plus_reg = casual + registered) %&gt;%
   summarise(all_zero = all(cas_plus_reg == cnt))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>###Bike rentals and temperature</p>
-<p>##Recreate Visualization</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGNiaWtlc2hhcmUgJT4lXG4gIGdncGxvdChtYXBwaW5nID0gYWVzKHggPSBkdGVkYXksIHkgPSBjbnQsIGNvbG9yID0gZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcpKSArXG4gICAgZ2VvbV9wb2ludChhbHBoYSA9IDAuNykgK1xuICAgIGxhYnMoXG4gICAgICB0aXRsZSA9IFwiQmlrZSByZW50YWxzIGluIERDLCAyMDExIGFuZCAyMDEyXCIsXG4gICAgICBzdWJ0aXRsZSA9IFwiV2FybWVyIHRlbXBlcmF0dXJlcyBhc3NvY2lhdGVkIHdpdGggbW9yZSBiaWtlIHJlbnRhbHNcIixcbiAgICAgIHggPSBcIkRhdGVcIixcbiAgICAgIHkgPSBcIkJpa2UgcmVudGFsc1wiLFxuICAgICAgY29sb3IgPSBcIlRlbXBlcmF0dXJlIChDKVwiXG4gICAgKSArXG4gIHRoZW1lX21pbmltYWwoKVxuYGBgIn0= -->
-<pre class="r"><code>dcbikeshare %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+###Bike rentals and temperature
+
+##Recreate Visualization
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGNiaWtlc2hhcmUgJT4lXG4gIGdncGxvdChtYXBwaW5nID0gYWVzKHggPSBkdGVkYXksIHkgPSBjbnQsIGNvbG9yID0gZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcpKSArXG4gICAgZ2VvbV9wb2ludChhbHBoYSA9IDAuNykgK1xuICAgIGxhYnMoXG4gICAgICB0aXRsZSA9IFxcQmlrZSByZW50YWxzIGluIERDXG5gYGAifQ== --&gt;
+
+```r
+```r
+dcbikeshare %&gt;%
   ggplot(mapping = aes(x = dteday, y = cnt, color = feeling_temperature_raw)) +
     geom_point(alpha = 0.7) +
     labs(
-      title = &quot;Bike rentals in DC, 2011 and 2012&quot;,
-      subtitle = &quot;Warmer temperatures associated with more bike rentals&quot;,
-      x = &quot;Date&quot;,
-      y = &quot;Bike rentals&quot;,
-      color = &quot;Temperature (C)&quot;
-    ) +
-  theme_minimal()</code></pre>
+      title = \Bike rentals in DC</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>##Bike rentals vs temperature Fit a linear model predicting total daily bike rentals from raw daily temperature and answer the questions below.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY250X3RtcCA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXCJsbVwiKSAlPiVcbiAgZml0KGNudCB+IHRlbXBlcmF0dXJlX3JhdywgZGF0YSA9IGRjYmlrZXNoYXJlKVxuY250X3RtcCAlPiVcbiAgdGlkeSgpXG5gYGAifQ== -->
-<pre class="r"><code>cnt_tmp &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY250X3RtcCA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXFxsbVxcKSAlPiVcbiAgZml0KGNudCB+IHRlbXBlcmF0dXJlX3JhdywgZGF0YSA9IGRjYmlrZXNoYXJlKVxuY250X3RtcCAlPiVcbiAgdGlkeSgpXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+cnt_tmp &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ temperature_raw, data = dcbikeshare)
 cnt_tmp %&gt;%
   tidy()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Use the chunk below to print out the R^2 of the model</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xhbmNlKGNudF90bXApJHIuc3F1YXJlZFxuYGBgIn0= -->
-<pre class="r"><code>glance(cnt_tmp)$r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>##Bike rentals vs feeling temperature Fit another linear model predicting total daily bike rentals from raw daily feeling temperature. Then, proceed to answering the questions below</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY250X2F0bXAgPC0gbGluZWFyX3JlZygpICU+JVxuICBzZXRfZW5naW5lKFwibG1cIikgJT4lXG4gIGZpdChjbnQgfiBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdywgZGF0YSA9IGRjYmlrZXNoYXJlKVxuY250X2F0bXAgJT4lXG4gIHRpZHkoKVxuYGBgIn0= -->
-<pre class="r"><code>cnt_atmp &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Use the chunk below to print out the R^2 of the model
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2xhbmNlKGNudF90bXApJHIuc3F1YXJlZFxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+glance(cnt_tmp)$r.squared</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+##Bike rentals vs feeling temperature
+Fit another linear model predicting total daily bike rentals from raw daily feeling temperature. Then, proceed to answering the questions below
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY250X2F0bXAgPC0gbGluZWFyX3JlZygpICU+JVxuICBzZXRfZW5naW5lKFxcbG1cXCkgJT4lXG4gIGZpdChjbnQgfiBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdywgZGF0YSA9IGRjYmlrZXNoYXJlKVxuY250X2F0bXAgJT4lXG4gIHRpZHkoKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+cnt_atmp &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ feeling_temperature_raw, data = dcbikeshare)
 cnt_atmp %&gt;%
   tidy()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Use the chunk below to print out the R2 of the model.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xhbmNlKGNudF9hdG1wKSRyLnNxdWFyZWRcbmBgYCJ9 -->
-<pre class="r"><code>glance(cnt_atmp)$r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>###Full model Fit a model predicting total daily bike rentals from season, year, whether the day is holiday or not, whether the day is a workingday or not, the weather category, temperature, feeling temperature, humidity, and windspeed, as well as the interaction between feeling temperature and holiday.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY250X2Z1bGwgPC0gbGluZWFyX3JlZygpICU+JVxuICBzZXRfZW5naW5lKFwibG1cIikgJT4lXG4gIGZpdChjbnQgfiBzZWFzb24gKyB5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArXG4gICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG50aWR5KGNudF9mdWxsKVxuYGBgIn0= -->
-<pre class="r"><code>cnt_full &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Use the chunk below to print out the R2 of the model.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2xhbmNlKGNudF9hdG1wKSRyLnNxdWFyZWRcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+glance(cnt_atmp)$r.squared</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+###Full model
+Fit a model predicting total daily bike rentals from season, year, whether the day is holiday or not, whether the day is a workingday or not, the weather category, temperature, feeling temperature, humidity, and windspeed, as well as the interaction between feeling temperature and holiday.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY250X2Z1bGwgPC0gbGluZWFyX3JlZygpICU+JVxuICBzZXRfZW5naW5lKFxcbG1cXCkgJT4lXG4gIGZpdChjbnQgfiBzZWFzb24gKyB5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArXG4gICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG50aWR5KGNudF9mdWxsKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+cnt_full &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season + yr + holiday + workingday + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 tidy(cnt_full)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Record adjusted R2 of the model.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xhbmNlKGNudF9mdWxsKSRhZGouci5zcXVhcmVkXG5gYGAifQ== -->
-<pre class="r"><code>glance(cnt_full)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>###Backward selection Perform the first step of backward selection by fitting a series of models, each with one explanatory variable removed from the full model you fit in the previous exercise. Record the adjusted R2s of each of these models.</p>
-<p>In the chunk below, fit the full model without the season variable and print out the R2 score.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1fc2Vhc29uIDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcImxtXCIpICU+JVxuICBmaXQoY250IH4geXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX3NlYXNvbikkYWRqLnIuc3F1YXJlZFxuYGBgIn0= -->
-<pre class="r"><code>rm_season &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Record adjusted R2 of the model.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2xhbmNlKGNudF9mdWxsKSRhZGouci5zcXVhcmVkXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+glance(cnt_full)$adj.r.squared</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+###Backward selection
+Perform the first step of backward selection by fitting a series of models, each with one explanatory variable removed from the full model you fit in the previous exercise. Record the adjusted R2s of each of these models.
+
+In the chunk below, fit the full model without the season variable and print out the R2 score.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1fc2Vhc29uIDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcXGxtXFwpICU+JVxuICBmaXQoY250IH4geXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX3NlYXNvbikkYWRqLnIuc3F1YXJlZFxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+rm_season &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ yr + holiday + workingday + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_season)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>In the chunk below, fit the full model without the year variable and print out the adjusted R2 score.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1feWVhciA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXCJsbVwiKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbitob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX3llYXIpJGFkai5yLnNxdWFyZWRcbmBgYCJ9 -->
-<pre class="r"><code>rm_year &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+In the chunk below, fit the full model without the year variable and print out the adjusted R2 score.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1feWVhciA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXFxsbVxcKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbitob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX3llYXIpJGFkai5yLnNxdWFyZWRcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+rm_year &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+holiday + workingday + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_year)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>In the chunk below, fit the full model without the holiday variable and print out the adjusted R2 score. Remember to also remove the interaction effect between holiday and feeling_temperature_raw.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1faG9saWRheSA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXCJsbVwiKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbiArIHlyICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcsIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX2hvbGlkYXkpJGFkai5yLnNxdWFyZWRcbmBgYCJ9 -->
-<pre class="r"><code>rm_holiday &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+In the chunk below, fit the full model without the holiday variable and print out the adjusted R2 score. Remember to also remove the interaction effect between holiday and feeling_temperature_raw.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1faG9saWRheSA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXFxsbVxcKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbiArIHlyICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcsIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX2hvbGlkYXkpJGFkai5yLnNxdWFyZWRcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+rm_holiday &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season + yr + workingday + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw, 
       data = dcbikeshare)
 glance(rm_holiday)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Fit the full model without the workingday variable using the code chunk below! Remember to record the adjusted R2 score.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1fd29ya2luZ2RheTwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcImxtXCIpICU+JVxuICBmaXQoY250IH4gc2Vhc29uK2hvbGlkYXkgKyB5ciArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX3dvcmtpbmdkYXkpJGFkai5yLnNxdWFyZWRcblxuYGBgIn0= -->
-<pre class="r"><code>rm_workingday&lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Fit the full model without the workingday variable using the code chunk below! Remember to record the adjusted R2 score.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1fd29ya2luZ2RheTwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcXGxtXFwpICU+JVxuICBmaXQoY250IH4gc2Vhc29uK2hvbGlkYXkgKyB5ciArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX3dvcmtpbmdkYXkpJGFkai5yLnNxdWFyZWRcblxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+rm_workingday&lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+holiday + yr + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_workingday)$adj.r.squared
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Fit the full model without the weathersit variable in the chunk below and record the adjusted R2 score.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1fd2VhdGhlcnNpdDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcImxtXCIpICU+JVxuICBmaXQoY250fiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArXG4gICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fd2VhdGhlcnNpdCkkYWRqLnIuc3F1YXJlZFxuYGBgIn0= -->
-<pre class="r"><code>rm_weathersit&lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Fit the full model without the weathersit variable in the chunk below and record the adjusted R2 score.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1fd2VhdGhlcnNpdDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcXGxtXFwpICU+JVxuICBmaXQoY250fiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArXG4gICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fd2VhdGhlcnNpdCkkYWRqLnIuc3F1YXJlZFxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+rm_weathersit&lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt~ season+yr + holiday + workingday +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_weathersit)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Remove the temperature_raw variable in the chunk below and record the adjusted R2 score</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1fdGVtcF9yYXc8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXCJsbVwiKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArXG4gICAgICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fdGVtcF9yYXcpJGFkai5yLnNxdWFyZWRcbmBgYCJ9 -->
-<pre class="r"><code>rm_temp_raw&lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Remove the temperature_raw variable in the chunk below and record the adjusted R2 score
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1fdGVtcF9yYXc8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXFxsbVxcKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArXG4gICAgICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fdGVtcF9yYXcpJGFkai5yLnNxdWFyZWRcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+rm_temp_raw&lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+yr + holiday + workingday + weathersit +
         feeling_temperature_raw + humidity_raw +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_temp_raw)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>In the chunk below, fit the full model without the feeling_temperature_raw variable and record the adjusted R2 score. Don’t forget to also remove the interaction effect between holiday and feeling_temperature_raw!</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1fZmVlbHRlbXBfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcImxtXCIpICU+JVxuICBmaXQoY250IH4gc2Vhc29uK3lyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICtcbiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdywgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fZmVlbHRlbXBfcmF3KSRhZGouci5zcXVhcmVkXG5gYGAifQ== -->
-<pre class="r"><code>rm_feeltemp_raw &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+In the chunk below, fit the full model without the feeling_temperature_raw variable and record the adjusted R2 score. Don’t forget to also remove the interaction effect between holiday and feeling_temperature_raw!
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1fZmVlbHRlbXBfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcXGxtXFwpICU+JVxuICBmaXQoY250IH4gc2Vhc29uK3lyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICtcbiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgd2luZHNwZWVkX3JhdywgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fZmVlbHRlbXBfcmF3KSRhZGouci5zcXVhcmVkXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+rm_feeltemp_raw &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+yr + holiday + workingday + weathersit +
         temperature_raw + humidity_raw +
         windspeed_raw, 
       data = dcbikeshare)
 glance(rm_feeltemp_raw)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Fit the full model without the humidity_raw variable and record the adjusted R2 score.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1faHVtaWRpdHlfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcImxtXCIpICU+JVxuICBmaXQoY250IH4gc2Vhc29uK3lyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICtcbiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1faHVtaWRpdHlfcmF3KSRhZGouci5zcXVhcmVkXG5gYGAifQ== -->
-<pre class="r"><code>rm_humidity_raw &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Fit the full model without the humidity_raw variable and record the adjusted R2 score.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1faHVtaWRpdHlfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiVcbiAgc2V0X2VuZ2luZShcXGxtXFwpICU+JVxuICBmaXQoY250IH4gc2Vhc29uK3lyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICtcbiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgICtcbiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1faHVtaWRpdHlfcmF3KSRhZGouci5zcXVhcmVkXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+rm_humidity_raw &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+yr + holiday + workingday + weathersit +
         temperature_raw + feeling_temperature_raw  +
         windspeed_raw + feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_humidity_raw)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Fit the full model without the windspeed_raw variable and record the adjusted R2 score.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1fd2luZHNwZWVkX3JhdyA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXCJsbVwiKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArXG4gICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fd2luZHNwZWVkX3JhdykkYWRqLnIuc3F1YXJlZFxuYGBgIn0= -->
-<pre class="r"><code>rm_windspeed_raw &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Fit the full model without the windspeed_raw variable and record the adjusted R2 score.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1fd2luZHNwZWVkX3JhdyA8LSBsaW5lYXJfcmVnKCkgJT4lXG4gIHNldF9lbmdpbmUoXFxsbVxcKSAlPiVcbiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArXG4gICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICtcbiAgICAgICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgXG4gICAgICBkYXRhID0gZGNiaWtlc2hhcmUpXG5nbGFuY2Uocm1fd2luZHNwZWVkX3JhdykkYWRqLnIuc3F1YXJlZFxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+rm_windspeed_raw &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+yr + holiday + workingday + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
          feeling_temperature_raw * holiday, 
       data = dcbikeshare)
 glance(rm_windspeed_raw)$adj.r.squared</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Last, remove the interaction effect between holiday and feeling_temperature_raw without removing the two variables individually. Then, record the adjusted R2.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm1faW50ZXJhY3Rpb24gPC0gbGluZWFyX3JlZygpICU+JVxuICBzZXRfZW5naW5lKFwibG1cIikgJT4lXG4gIGZpdChjbnQgfiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcsIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX2ludGVyYWN0aW9uKSRhZGouci5zcXVhcmVkXG5gYGAifQ== -->
-<pre class="r"><code>rm_interaction &lt;- linear_reg() %&gt;%
-  set_engine(&quot;lm&quot;) %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Last, remove the interaction effect between holiday and feeling_temperature_raw without removing the two variables individually. Then, record the adjusted R2.
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm1faW50ZXJhY3Rpb24gPC0gbGluZWFyX3JlZygpICU+JVxuICBzZXRfZW5naW5lKFxcbG1cXCkgJT4lXG4gIGZpdChjbnQgfiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgK1xuICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArXG4gICAgICAgIHdpbmRzcGVlZF9yYXcsIFxuICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKVxuZ2xhbmNlKHJtX2ludGVyYWN0aW9uKSRhZGouci5zcXVhcmVkXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+rm_interaction &lt;- linear_reg() %&gt;%
+  set_engine(\lm\) %&gt;%
   fit(cnt ~ season+yr + holiday + workingday + weathersit +
         temperature_raw + feeling_temperature_raw + humidity_raw +
         windspeed_raw, 
       data = dcbikeshare)
 glance(rm_interaction)$adj.r.squared</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShyZWFkeGwpXG5kZjEgPC0gcmVhZF9leGNlbChcIlU6L0RTMjQxLzIwMjAwOC1jYXBpdGFsYmlrZXNoYXJlLXRyaXBkYXRhLnhsc3hcIilcbmBgYCJ9 --&gt;
+
+```r
+library(readxl)
+df1 &lt;- read_excel(&quot;U:/DS241/202008-capitalbikeshare-tripdata.xlsx&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>###Ridership vs time</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGY0PWRmMSAlPiUgXG4gIHNlbGVjdChyaWRlYWJsZV90eXBlLCBzdGFydD1zdGFydGVkX2F0LCBlbmQ9ZW5kZWRfYXQpICU+JVxuICBwaXZvdF9sb25nZXIoY29scz1zdGFydDplbmQsbmFtZXNfdG89XCJ0eXBlXCIsIHZhbHVlc190bz1cInRpbWVcIikgJT4lXG4gIGFycmFuZ2UodGltZSkgJT4lXG4gIG11dGF0ZShpbmM9Y2FzZV93aGVuKFxuICAgIHR5cGU9PVwic3RhcnRcIiB+IDEsXG4gICAgdHlwZT09XCJlbmRcIiB+IC0xXG4gICksIHJpZGVycz1jdW1zdW0oaW5jKSlcblxuYGBgIn0= -->
+<pre class="r"><code>df4=df1 %&gt;% 
+  select(rideable_type, start=started_at, end=ended_at) %&gt;%
+  pivot_longer(cols=start:end,names_to=&quot;type&quot;, values_to=&quot;time&quot;) %&gt;%
+  arrange(time) %&gt;%
+  mutate(inc=case_when(
+    type==&quot;start&quot; ~ 1,
+    type==&quot;end&quot; ~ -1
+  ), riders=cumsum(inc))
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Can we plot over the entire month</p>
+<p>Can we plot over the entire month?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGY0ICU+JSBtdXRhdGUoZGF5PWRheSh0aW1lKSkgJT4lXG4gIGdncGxvdChhZXModGltZSwgcmlkZXJzKSkrZ2VvbV9wb2ludChzaXplPS41LCBhbHBoYT0uMDIpK2ZhY2V0X3dyYXAofmRheSlcblxuYGBgIn0= -->
+<pre class="r"><code>df4 %&gt;% mutate(day=day(time)) %&gt;%
+  ggplot(aes(time, riders))+geom_point(size=.5, alpha=.02)+facet_wrap(~day)
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkJpa2VzIGluIERDIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NClRoZSBmb2xsb3dpbmcgaXMgYSB0dXRvcmlhbCBvcmlnaW5hbGx5IGZyb20gaHR0cHM6Ly9taW5lY3Iuc2hpbnlhcHBzLmlvL2RzYm94LTA2LWRjYmlrZXNoYXJlLy4gVGhpcyB0dXRvcmlhbCBpbnZvbHZlcyB2aWV3aW5nIHRoZSBhZmZlY3Qgb2YgYSB2YXJpZXR5IG9mIHZhcmlhYmxlcyBvbiBiaWtlIHJpZGVyc2hpcCBpbiBXYXNoaW5ndG9uIEQuQy4NCg0KIyMjUGFja2FnZXMNCkxvYWQgdGhlIHBhY2thZ2VzIHdlIG5lZWQgZm9yIHRoaXMgdHV0b3JpYWwgdXNpbmcgdGhlIGNodW5rIGJlbG93DQpgYGB7cn0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeSh0aWR5bW9kZWxzKQ0KbGlicmFyeShkc2JveCkNCmxpYnJhcnkocmVhZHhsKQ0KYmlrZXMgPC0gcmVhZF9leGNlbCgiVTovRFMyNDEvMjAyMDA4LWNhcGl0YWxiaWtlc2hhcmUtdHJpcGRhdGEueGxzeCIpDQoNCmBgYA0KDQojIyNEYXRhDQpUaGUgZGF0YSBpbmNsdWRlIGRhaWx5IGJpa2UgcmVudGFsIGNvdW50cyAoYnkgbWVtYmVycyBhbmQgY2FzdWFsIHVzZXJzKSBvZiBDYXBpdGFsIEJpa2VzaGFyZSBpbiBXYXNoaW5ndG9uLCBEQyBpbiAyMDExIGFuZCAyMDEyIGFzIHdlbGwgYXMgd2VhdGhlciBpbmZvcm1hdGlvbiBvbiB0aGVzZSBkYXlzLiBUaGUgZGF0YSBpcyBjb250YWluZWQgaW4gdGhlIGRzYm94IHBhY2thZ2UgYW5kIGlzIGNhbGxlZCBkY2Jpa2VzaGFyZS4NCg0KVGhlIG9yaWdpbmFsIGRhdGEgc291cmNlcyBhcmUgaHR0cDovL2NhcGl0YWxiaWtlc2hhcmUuY29tL3N5c3RlbS1kYXRhIGFuZCBodHRwOi8vd3d3LmZyZWVtZXRlby5jb20uDQoNCiMjI1JlY29kZSBEYXRhDQoNCiMjUmVjb2RlIFNlYXNvbg0KUmVjb2RlIHRoZSBzZWFzb24gdmFyaWFibGUgdG8gYmUgYSBmYWN0b3Igd2l0aCBtZWFuaW5nZnVsIGxldmVsIG5hbWVzIGFzIG91dGxpbmVkIGluIHRoZSBjb2RlYm9vaywgd2l0aCBzcHJpbmcgYXMgdGhlIGJhc2VsaW5lIGxldmVsLg0KYGBge3J9DQpkY2Jpa2VzaGFyZSA8LSBkY2Jpa2VzaGFyZSAlPiUNCiAgbXV0YXRlKA0KICAgIHNlYXNvbiA9IGNhc2Vfd2hlbigNCiAgICAgIHNlYXNvbiA9PSAxIH4gIndpbnRlciIsDQogICAgICBzZWFzb24gPT0gMiB+ICJzcHJpbmciLA0KICAgICAgc2Vhc29uID09IDMgfiAic3VtbWVyIiwNCiAgICAgIHNlYXNvbiA9PSA0IH4gImZhbGwiDQogICAgKSwNCiAgICBzZWFzb24gPSBmY3RfcmVsZXZlbChzZWFzb24sICJzcHJpbmciLCAic3VtbWVyIiwgImZhbGwiLCAid2ludGVyIikNCiAgKQ0KYGBgDQoNCiMjUmVjb2RlIGhvbGlkYXkgYW5kIHdvcmtpbmdkYXkNClJlY29kZSB0aGUgYmluYXJ5IHZhcmlhYmxlcyBob2xpZGF5IGFuZCB3b3JraW5nZGF5IHRvIGJlIGZhY3RvcnMgd2l0aCBsZXZlbHMgbm8gKDApIGFuZCB5ZXMgKDEpLCB3aXRoIG5vIGFzIHRoZSBiYXNlbGluZSBsZXZlbC4NCmBgYHtyfQ0KZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lDQogIG11dGF0ZSgNCiAgICBob2xpZGF5ID0gaWZlbHNlKGhvbGlkYXkgPT0gMCwgIm5vIiwgInllcyIpLCAgICAgIA0KICAgIGhvbGlkYXkgPSBmY3RfcmVsZXZlbChob2xpZGF5LCAibm8iLCAieWVzIiksICAgIA0KICAgIHdvcmtpbmdkYXkgPSBpZmVsc2Uod29ya2luZ2RheSA9PSAwLCAibm8iLCAieWVzIiksDQogICAgd29ya2luZ2RheSA9IGZjdF9yZWxldmVsKHdvcmtpbmdkYXksICJubyIsICJ5ZXMiKQ0KICApDQpgYGANCg0KIyNSZWNvZGUgeWVhcg0KUmVjb2RlIHRoZSB5ciB2YXJpYWJsZSB0byBiZSBhIGZhY3RvciB3aXRoIGxldmVscyAyMDExIGFuZCAyMDEyLCB3aXRoIDIwMTEgYXMgdGhlIGJhc2VsaW5lIGxldmVsLg0KYGBge3J9DQpkY2Jpa2VzaGFyZSA8LSBkY2Jpa2VzaGFyZSAlPiUNCiAgbXV0YXRlKA0KICAgIHlyID0gaWZlbHNlKHlyID09IDAsICIyMDExIiwgIjIwMTIiKSwNCiAgICB5ciA9IGZjdF9yZWxldmVsKHlyLCAiMjAxMSIsICIyMDEyIikNCiAgKQ0KYGBgDQoNCiMjUmVjb2RlIHdlYXRoZXJzaXQNClJlY29kZSB0aGUgd2VhdGhlcnNpdCB2YXJpYWJsZSBhcyAxIC0gY2xlYXIsIDIgLSBtaXN0LCAzIC0gbGlnaHQgcHJlY2lwaXRhdGlvbiwgYW5kIDQgLSBoZWF2eSBwcmVjaXBpdGF0aW9uLCB3aXRoIGNsZWFyIGFzIHRoZSBiYXNlbGluZS4NCmBgYHtyfQ0KZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lDQogIG11dGF0ZSgNCiAgICB3ZWF0aGVyc2l0ID0gY2FzZV93aGVuKA0KICAgICAgd2VhdGhlcnNpdCA9PSAxIH4gImNsZWFyIiwNCiAgICAgIHdlYXRoZXJzaXQgPT0gMiB+ICJtaXN0IiwNCiAgICAgIHdlYXRoZXJzaXQgPT0gMyB+ICJsaWdodCBwcmVjaXBpdGF0aW9uIiwNCiAgICAgIHdlYXRoZXJzaXQgPT0gNCB+ICJoZWF2eSBwcmVjaXBpdGF0aW9uIg0KICAgICksDQogICAgd2VhdGhlcnNpdCA9IGZjdF9yZWxldmVsKHdlYXRoZXJzaXQsICJjbGVhciIsICJtaXN0IiwgImxpZ2h0IHByZWNpcGl0YXRpb24iLCAiaGVhdnkgcHJlY2lwaXRhdGlvbiIpDQogICkNCmBgYA0KDQpSZWNvZGluZyB3YXJuaW5nDQpBdCB0aGlzIHBvaW50LCB5b3UgbWlnaHQgd29uZGVyIHdoYXQgdGhpcyB3YXJuaW5nIG1lYW5zOg0KDQpgV2FybmluZzogVW5rbm93biBsZXZlbHMgaW4gYGZgOiBoZWF2eSBwcmVjaXBpdGF0aW9uYA0KVGhpcyBpcyBzaW1wbHkgUiB3YXJuaW5nIHVzIHRoYXQgd2hpbGUgaXQgaXMgcG9zc2libGUgZm9yIHRoZSB3ZWF0aGVyc2l0IHZhcmlhYmxlIHRvIGhhdmUgdGhlIHZhbHVlIDQgZm9yIGhlYXZ5IHByZWNpcGl0YXRpb24sIHRoaXMgbmV2ZXIgYWN0dWFsbHkgb2NjdXJzIGluIHRoZSBkYXRhLiBDb25zZXF1ZW50bHksIHRoZSB3ZWF0aGVyc2l0IGZhY3RvciBvbmx5IGhhcyB0aHJlZSBsZXZlbHMuDQoNCiMjI0NyZWF0aW5nIG5ldyB2YXJpYWJsZXMNCg0KIyNDcmVhdGUgcmF3IHZhbHVlcyBmb3IgdGVtcGVyYXR1cmUsIGh1bWlkaXR5LCBhbmQgd2luZHNwZWVkDQpDYWxjdWxhdGUgcmF3IHRlbXBlcmF0dXJlLCBmZWVsaW5nIHRlbXBlcmF0dXJlLCBodW1pZGl0eSwgYW5kIHdpbmRzcGVlZCBhcyB0aGVpciB2YWx1ZXMgZ2l2ZW4gaW4gdGhlIGRhdGFzZXQgbXVsdGlwbGllZCBieSB0aGUgbWF4aW11bSByYXcgdmFsdWVzIHN0YXRlZCBpbiB0aGUgY29kZWJvb2sgZm9yIGVhY2ggdmFyaWFibGUuIEluc3RlYWQgb2Ygd3JpdGluZyBvdmVyIHRoZSBleGlzdGluZyB2YXJpYWJsZXMsIGNyZWF0ZSBuZXcgb25lcyBjYWxsZWQgdGVtcGVyYXR1cmVfcmF3LCBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdywgaHVtaWRpdHlfcmF3LCB3aW5kc3BlZWRfcmF3Lg0KDQpgYGB7cn0NCmRjYmlrZXNoYXJlIDwtIGRjYmlrZXNoYXJlICU+JQ0KICBtdXRhdGUoDQogICAgdGVtcGVyYXR1cmVfcmF3ID0gdGVtcCAqIDQxLA0KICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ID0gYXRlbXAgKiA1MCwNCiAgICBodW1pZGl0eV9yYXcgPSBodW0gKiAxMDAsDQogICAgd2luZHNwZWVkX3JhdyA9IHdpbmRzcGVlZCAqIDY3DQogICkNCmBgYA0KDQojI0NoZWNrIGNudCB2YXJpYWJsZQ0KQ2hlY2sgdGhhdCB0aGUgc3VtIG9mIGNhc3VhbCBhbmQgcmVnaXN0ZXJlZCBhZGRzIHVwIHRvIGNudCBmb3IgZWFjaCByZWNvcmQuIERvIHRoaXMgYnkgY3JlYXRpbmcgYSBuZXcgY29sdW1uIHRoYXQgdGFrZXMgb24gdGhlIHZhbHVlIFRSVUUgaWYgdGhleSBhZGQgdXAgYW5kIEZBTFNFIGlmIG5vdCwgYW5kIHRoZW4gY2hlY2tpbmcgaWYgYWxsIHZhbHVlcyBpbiB0aGF0IGNvbHVtbiBhcmUgVFJVRXMuDQpgYGB7cn0NCmRjYmlrZXNoYXJlICU+JQ0KICBtdXRhdGUoY2FzX3BsdXNfcmVnID0gY2FzdWFsICsgcmVnaXN0ZXJlZCkgJT4lDQogIHN1bW1hcmlzZShhbGxfemVybyA9IGFsbChjYXNfcGx1c19yZWcgPT0gY250KSkNCmBgYA0KDQojIyNCaWtlIHJlbnRhbHMgYW5kIHRlbXBlcmF0dXJlDQoNCiMjUmVjcmVhdGUgVmlzdWFsaXphdGlvbg0KYGBge3J9DQpkY2Jpa2VzaGFyZSAlPiUNCiAgZ2dwbG90KG1hcHBpbmcgPSBhZXMoeCA9IGR0ZWRheSwgeSA9IGNudCwgY29sb3IgPSBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdykpICsNCiAgICBnZW9tX3BvaW50KGFscGhhID0gMC43KSArDQogICAgbGFicygNCiAgICAgIHRpdGxlID0gIkJpa2UgcmVudGFscyBpbiBEQywgMjAxMSBhbmQgMjAxMiIsDQogICAgICBzdWJ0aXRsZSA9ICJXYXJtZXIgdGVtcGVyYXR1cmVzIGFzc29jaWF0ZWQgd2l0aCBtb3JlIGJpa2UgcmVudGFscyIsDQogICAgICB4ID0gIkRhdGUiLA0KICAgICAgeSA9ICJCaWtlIHJlbnRhbHMiLA0KICAgICAgY29sb3IgPSAiVGVtcGVyYXR1cmUgKEMpIg0KICAgICkgKw0KICB0aGVtZV9taW5pbWFsKCkNCmBgYA0KDQojI0Jpa2UgcmVudGFscyB2cyB0ZW1wZXJhdHVyZQ0KRml0IGEgbGluZWFyIG1vZGVsIHByZWRpY3RpbmcgdG90YWwgZGFpbHkgYmlrZSByZW50YWxzIGZyb20gcmF3IGRhaWx5IHRlbXBlcmF0dXJlIGFuZCBhbnN3ZXIgdGhlIHF1ZXN0aW9ucyBiZWxvdy4NCmBgYHtyfQ0KY250X3RtcCA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiB0ZW1wZXJhdHVyZV9yYXcsIGRhdGEgPSBkY2Jpa2VzaGFyZSkNCmNudF90bXAgJT4lDQogIHRpZHkoKQ0KYGBgDQoNClVzZSB0aGUgY2h1bmsgYmVsb3cgdG8gcHJpbnQgb3V0IHRoZSBSXjIgb2YgdGhlIG1vZGVsDQpgYGB7cn0NCmdsYW5jZShjbnRfdG1wKSRyLnNxdWFyZWQNCmBgYA0KDQojI0Jpa2UgcmVudGFscyB2cyBmZWVsaW5nIHRlbXBlcmF0dXJlDQpGaXQgYW5vdGhlciBsaW5lYXIgbW9kZWwgcHJlZGljdGluZyB0b3RhbCBkYWlseSBiaWtlIHJlbnRhbHMgZnJvbSByYXcgZGFpbHkgZmVlbGluZyB0ZW1wZXJhdHVyZS4gVGhlbiwgcHJvY2VlZCB0byBhbnN3ZXJpbmcgdGhlIHF1ZXN0aW9ucyBiZWxvdw0KYGBge3J9DQpjbnRfYXRtcCA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdywgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KY250X2F0bXAgJT4lDQogIHRpZHkoKQ0KYGBgDQoNClVzZSB0aGUgY2h1bmsgYmVsb3cgdG8gcHJpbnQgb3V0IHRoZSBSMiBvZiB0aGUgbW9kZWwuDQpgYGB7cn0NCmdsYW5jZShjbnRfYXRtcCkkci5zcXVhcmVkDQpgYGANCg0KIyMjRnVsbCBtb2RlbA0KRml0IGEgbW9kZWwgcHJlZGljdGluZyB0b3RhbCBkYWlseSBiaWtlIHJlbnRhbHMgZnJvbSBzZWFzb24sIHllYXIsIHdoZXRoZXIgdGhlIGRheSBpcyBob2xpZGF5IG9yIG5vdCwgd2hldGhlciB0aGUgZGF5IGlzIGEgd29ya2luZ2RheSBvciBub3QsIHRoZSB3ZWF0aGVyIGNhdGVnb3J5LCB0ZW1wZXJhdHVyZSwgZmVlbGluZyB0ZW1wZXJhdHVyZSwgaHVtaWRpdHksIGFuZCB3aW5kc3BlZWQsIGFzIHdlbGwgYXMgdGhlIGludGVyYWN0aW9uIGJldHdlZW4gZmVlbGluZyB0ZW1wZXJhdHVyZSBhbmQgaG9saWRheS4NCmBgYHtyfQ0KY250X2Z1bGwgPC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250IH4gc2Vhc29uICsgeXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KdGlkeShjbnRfZnVsbCkNCmBgYA0KDQpSZWNvcmQgYWRqdXN0ZWQgUjIgb2YgdGhlIG1vZGVsLg0KYGBge3J9DQpnbGFuY2UoY250X2Z1bGwpJGFkai5yLnNxdWFyZWQNCmBgYA0KDQojIyNCYWNrd2FyZCBzZWxlY3Rpb24NClBlcmZvcm0gdGhlIGZpcnN0IHN0ZXAgb2YgYmFja3dhcmQgc2VsZWN0aW9uIGJ5IGZpdHRpbmcgYSBzZXJpZXMgb2YgbW9kZWxzLCBlYWNoIHdpdGggb25lIGV4cGxhbmF0b3J5IHZhcmlhYmxlIHJlbW92ZWQgZnJvbSB0aGUgZnVsbCBtb2RlbCB5b3UgZml0IGluIHRoZSBwcmV2aW91cyBleGVyY2lzZS4gUmVjb3JkIHRoZSBhZGp1c3RlZCBSMnMgb2YgZWFjaCBvZiB0aGVzZSBtb2RlbHMuDQoNCkluIHRoZSBjaHVuayBiZWxvdywgZml0IHRoZSBmdWxsIG1vZGVsIHdpdGhvdXQgdGhlIHNlYXNvbiB2YXJpYWJsZSBhbmQgcHJpbnQgb3V0IHRoZSBSMiBzY29yZS4NCmBgYHtyfQ0Kcm1fc2Vhc29uIDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHlyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICsNCiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgKyBodW1pZGl0eV9yYXcgKw0KICAgICAgICB3aW5kc3BlZWRfcmF3ICsgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgKiBob2xpZGF5LCANCiAgICAgIGRhdGEgPSBkY2Jpa2VzaGFyZSkNCmdsYW5jZShybV9zZWFzb24pJGFkai5yLnNxdWFyZWQNCmBgYA0KDQpJbiB0aGUgY2h1bmsgYmVsb3csIGZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSB5ZWFyIHZhcmlhYmxlIGFuZCBwcmludCBvdXQgdGhlIGFkanVzdGVkIFIyIHNjb3JlLg0KYGBge3J9DQpybV95ZWFyIDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHNlYXNvbitob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX3llYXIpJGFkai5yLnNxdWFyZWQNCmBgYA0KDQpJbiB0aGUgY2h1bmsgYmVsb3csIGZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSBob2xpZGF5IHZhcmlhYmxlIGFuZCBwcmludCBvdXQgdGhlIGFkanVzdGVkIFIyIHNjb3JlLiBSZW1lbWJlciB0byBhbHNvIHJlbW92ZSB0aGUgaW50ZXJhY3Rpb24gZWZmZWN0IGJldHdlZW4gaG9saWRheSBhbmQgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcuDQpgYGB7cn0NCnJtX2hvbGlkYXkgPC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250IH4gc2Vhc29uICsgeXIgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdywgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1faG9saWRheSkkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCkZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSB3b3JraW5nZGF5IHZhcmlhYmxlIHVzaW5nIHRoZSBjb2RlIGNodW5rIGJlbG93ISBSZW1lbWJlciB0byByZWNvcmQgdGhlIGFkanVzdGVkIFIyIHNjb3JlLg0KYGBge3J9DQpybV93b3JraW5nZGF5PC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250IH4gc2Vhc29uK2hvbGlkYXkgKyB5ciArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX3dvcmtpbmdkYXkpJGFkai5yLnNxdWFyZWQNCg0KYGBgDQoNCkZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSB3ZWF0aGVyc2l0IHZhcmlhYmxlIGluIHRoZSBjaHVuayBiZWxvdyBhbmQgcmVjb3JkIHRoZSBhZGp1c3RlZCBSMiBzY29yZS4NCmBgYHtyfQ0Kcm1fd2VhdGhlcnNpdDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudH4gc2Vhc29uK3lyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX3dlYXRoZXJzaXQpJGFkai5yLnNxdWFyZWQNCmBgYA0KDQpSZW1vdmUgdGhlIHRlbXBlcmF0dXJlX3JhdyB2YXJpYWJsZSBpbiB0aGUgY2h1bmsgYmVsb3cgYW5kIHJlY29yZCB0aGUgYWRqdXN0ZWQgUjIgc2NvcmUNCmBgYHtyfQ0Kcm1fdGVtcF9yYXc8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX3RlbXBfcmF3KSRhZGouci5zcXVhcmVkDQpgYGANCg0KSW4gdGhlIGNodW5rIGJlbG93LCBmaXQgdGhlIGZ1bGwgbW9kZWwgd2l0aG91dCB0aGUgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgdmFyaWFibGUgYW5kIHJlY29yZCB0aGUgYWRqdXN0ZWQgUjIgc2NvcmUuIERvbuKAmXQgZm9yZ2V0IHRvIGFsc28gcmVtb3ZlIHRoZSBpbnRlcmFjdGlvbiBlZmZlY3QgYmV0d2VlbiBob2xpZGF5IGFuZCBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyENCmBgYHtyfQ0Kcm1fZmVlbHRlbXBfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcsIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX2ZlZWx0ZW1wX3JhdykkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCkZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSBodW1pZGl0eV9yYXcgdmFyaWFibGUgYW5kIHJlY29yZCB0aGUgYWRqdXN0ZWQgUjIgc2NvcmUuDQpgYGB7cn0NCnJtX2h1bWlkaXR5X3JhdyA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAgKw0KICAgICAgICB3aW5kc3BlZWRfcmF3ICsgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgKiBob2xpZGF5LCANCiAgICAgIGRhdGEgPSBkY2Jpa2VzaGFyZSkNCmdsYW5jZShybV9odW1pZGl0eV9yYXcpJGFkai5yLnNxdWFyZWQNCmBgYA0KDQpGaXQgdGhlIGZ1bGwgbW9kZWwgd2l0aG91dCB0aGUgd2luZHNwZWVkX3JhdyB2YXJpYWJsZSBhbmQgcmVjb3JkIHRoZSBhZGp1c3RlZCBSMiBzY29yZS4NCmBgYHtyfQ0Kcm1fd2luZHNwZWVkX3JhdyA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgICBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX3dpbmRzcGVlZF9yYXcpJGFkai5yLnNxdWFyZWQNCmBgYA0KDQpMYXN0LCByZW1vdmUgdGhlIGludGVyYWN0aW9uIGVmZmVjdCBiZXR3ZWVuIGhvbGlkYXkgYW5kIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3IHdpdGhvdXQgcmVtb3ZpbmcgdGhlIHR3byB2YXJpYWJsZXMgaW5kaXZpZHVhbGx5LiBUaGVuLCByZWNvcmQgdGhlIGFkanVzdGVkIFIyLg0KYGBge3J9DQpybV9pbnRlcmFjdGlvbiA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcsIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX2ludGVyYWN0aW9uKSRhZGouci5zcXVhcmVkDQpgYGANCg0KDQpgYGB7cn0NCmxpYnJhcnkocmVhZHhsKQ0KZGYxIDwtIHJlYWRfZXhjZWwoIlU6L0RTMjQxLzIwMjAwOC1jYXBpdGFsYmlrZXNoYXJlLXRyaXBkYXRhLnhsc3giKQ0KYGBgDQoNCiMjI1JpZGVyc2hpcCB2cyB0aW1lDQpgYGB7cn0NCmRmND1kZjEgJT4lIA0KICBzZWxlY3QocmlkZWFibGVfdHlwZSwgc3RhcnQ9c3RhcnRlZF9hdCwgZW5kPWVuZGVkX2F0KSAlPiUNCiAgcGl2b3RfbG9uZ2VyKGNvbHM9c3RhcnQ6ZW5kLG5hbWVzX3RvPSJ0eXBlIiwgdmFsdWVzX3RvPSJ0aW1lIikgJT4lDQogIGFycmFuZ2UodGltZSkgJT4lDQogIG11dGF0ZShpbmM9Y2FzZV93aGVuKA0KICAgIHR5cGU9PSJzdGFydCIgfiAxLA0KICAgIHR5cGU9PSJlbmQiIH4gLTENCiAgKSwgcmlkZXJzPWN1bXN1bShpbmMpKQ0KDQpgYGANCg0KQ2FuIHdlIHBsb3Qgb3ZlciB0aGUgZW50aXJlIG1vbnRoDQpgYGB7cn0NCmRmNCAlPiUgbXV0YXRlKGRheT1kYXkodGltZSkpICU+JQ0KICBnZ3Bsb3QoYWVzKHRpbWUsIHJpZGVycykpK2dlb21fcG9pbnQoc2l6ZT0uNSwgYWxwaGE9LjAyKStmYWNldF93cmFwKH5kYXkpDQoNCmBgYA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkJpa2VzIGluIERDIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NClRoZSBmb2xsb3dpbmcgaXMgYSB0dXRvcmlhbCBvcmlnaW5hbGx5IGZyb20gaHR0cHM6Ly9taW5lY3Iuc2hpbnlhcHBzLmlvL2RzYm94LTA2LWRjYmlrZXNoYXJlLy4gVGhpcyB0dXRvcmlhbCBpbnZvbHZlcyB2aWV3aW5nIHRoZSBhZmZlY3Qgb2YgYSB2YXJpZXR5IG9mIHZhcmlhYmxlcyBvbiBiaWtlIHJpZGVyc2hpcCBpbiBXYXNoaW5ndG9uIEQuQy4NCg0KIyMjUGFja2FnZXMNCkxvYWQgdGhlIHBhY2thZ2VzIHdlIG5lZWQgZm9yIHRoaXMgdHV0b3JpYWwgdXNpbmcgdGhlIGNodW5rIGJlbG93DQpgYGB7cn0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeSh0aWR5bW9kZWxzKQ0KbGlicmFyeShkc2JveCkNCmxpYnJhcnkocmVhZHhsKQ0KDQpgYGANCg0KIyMjRGF0YQ0KVGhlIGRhdGEgaW5jbHVkZSBkYWlseSBiaWtlIHJlbnRhbCBjb3VudHMgKGJ5IG1lbWJlcnMgYW5kIGNhc3VhbCB1c2Vycykgb2YgQ2FwaXRhbCBCaWtlc2hhcmUgaW4gV2FzaGluZ3RvbiwgREMgaW4gMjAxMSBhbmQgMjAxMiBhcyB3ZWxsIGFzIHdlYXRoZXIgaW5mb3JtYXRpb24gb24gdGhlc2UgZGF5cy4gVGhlIGRhdGEgaXMgY29udGFpbmVkIGluIHRoZSBkc2JveCBwYWNrYWdlIGFuZCBpcyBjYWxsZWQgZGNiaWtlc2hhcmUuDQoNClRoZSBvcmlnaW5hbCBkYXRhIHNvdXJjZXMgYXJlIGh0dHA6Ly9jYXBpdGFsYmlrZXNoYXJlLmNvbS9zeXN0ZW0tZGF0YSBhbmQgaHR0cDovL3d3dy5mcmVlbWV0ZW8uY29tLg0KDQpTaW5jZSB0aGUgZmlsZSBpcyB0b28gbGFyZ2UgdG8gdXBsb2FkIHRvIEdpdEh1YiwgeW91IHdpbGwgbmVlZCB0byBkb3dubG9hZCB0aGUgZmlsZSBmcm9tIHRoZSB3ZWJzaXRlIGxpc3RlZCBhYm92ZSBhbmQgZWRpdCB0aGUgY29kZSB0byBjb3JyZXNwb25kIHdpdGggd2hlcmUgdGhlIGZpbGUgaXMgc3RvcmVkIG9uIHlvdXIgbWFjaGluZQ0KDQpgYGB7cn0NCmJpa2VzIDwtIHJlYWRfZXhjZWwoIlU6L0RTMjQxLzIwMjAwOC1jYXBpdGFsYmlrZXNoYXJlLXRyaXBkYXRhLnhsc3giKQ0KYGBgDQoNCg0KIyMjUmVjb2RlIERhdGENCg0KIyNSZWNvZGUgU2Vhc29uDQpSZWNvZGUgdGhlIHNlYXNvbiB2YXJpYWJsZSB0byBiZSBhIGZhY3RvciB3aXRoIG1lYW5pbmdmdWwgbGV2ZWwgbmFtZXMgYXMgb3V0bGluZWQgaW4gdGhlIGNvZGVib29rLCB3aXRoIHNwcmluZyBhcyB0aGUgYmFzZWxpbmUgbGV2ZWwuDQpgYGB7cn0NCmRjYmlrZXNoYXJlIDwtIGRjYmlrZXNoYXJlICU+JQ0KICBtdXRhdGUoDQogICAgc2Vhc29uID0gY2FzZV93aGVuKA0KICAgICAgc2Vhc29uID09IDEgfiAid2ludGVyIiwNCiAgICAgIHNlYXNvbiA9PSAyIH4gInNwcmluZyIsDQogICAgICBzZWFzb24gPT0gMyB+ICJzdW1tZXIiLA0KICAgICAgc2Vhc29uID09IDQgfiAiZmFsbCINCiAgICApLA0KICAgIHNlYXNvbiA9IGZjdF9yZWxldmVsKHNlYXNvbiwgInNwcmluZyIsICJzdW1tZXIiLCAiZmFsbCIsICJ3aW50ZXIiKQ0KICApDQpgYGANCg0KIyNSZWNvZGUgaG9saWRheSBhbmQgd29ya2luZ2RheQ0KUmVjb2RlIHRoZSBiaW5hcnkgdmFyaWFibGVzIGhvbGlkYXkgYW5kIHdvcmtpbmdkYXkgdG8gYmUgZmFjdG9ycyB3aXRoIGxldmVscyBubyAoMCkgYW5kIHllcyAoMSksIHdpdGggbm8gYXMgdGhlIGJhc2VsaW5lIGxldmVsLg0KYGBge3J9DQpkY2Jpa2VzaGFyZSA8LSBkY2Jpa2VzaGFyZSAlPiUNCiAgbXV0YXRlKA0KICAgIGhvbGlkYXkgPSBpZmVsc2UoaG9saWRheSA9PSAwLCAibm8iLCAieWVzIiksICAgICAgDQogICAgaG9saWRheSA9IGZjdF9yZWxldmVsKGhvbGlkYXksICJubyIsICJ5ZXMiKSwgICAgDQogICAgd29ya2luZ2RheSA9IGlmZWxzZSh3b3JraW5nZGF5ID09IDAsICJubyIsICJ5ZXMiKSwNCiAgICB3b3JraW5nZGF5ID0gZmN0X3JlbGV2ZWwod29ya2luZ2RheSwgIm5vIiwgInllcyIpDQogICkNCmBgYA0KDQojI1JlY29kZSB5ZWFyDQpSZWNvZGUgdGhlIHlyIHZhcmlhYmxlIHRvIGJlIGEgZmFjdG9yIHdpdGggbGV2ZWxzIDIwMTEgYW5kIDIwMTIsIHdpdGggMjAxMSBhcyB0aGUgYmFzZWxpbmUgbGV2ZWwuDQpgYGB7cn0NCmRjYmlrZXNoYXJlIDwtIGRjYmlrZXNoYXJlICU+JQ0KICBtdXRhdGUoDQogICAgeXIgPSBpZmVsc2UoeXIgPT0gMCwgIjIwMTEiLCAiMjAxMiIpLA0KICAgIHlyID0gZmN0X3JlbGV2ZWwoeXIsICIyMDExIiwgIjIwMTIiKQ0KICApDQpgYGANCg0KIyNSZWNvZGUgd2VhdGhlcnNpdA0KUmVjb2RlIHRoZSB3ZWF0aGVyc2l0IHZhcmlhYmxlIGFzIDEgLSBjbGVhciwgMiAtIG1pc3QsIDMgLSBsaWdodCBwcmVjaXBpdGF0aW9uLCBhbmQgNCAtIGhlYXZ5IHByZWNpcGl0YXRpb24sIHdpdGggY2xlYXIgYXMgdGhlIGJhc2VsaW5lLg0KYGBge3J9DQpkY2Jpa2VzaGFyZSA8LSBkY2Jpa2VzaGFyZSAlPiUNCiAgbXV0YXRlKA0KICAgIHdlYXRoZXJzaXQgPSBjYXNlX3doZW4oDQogICAgICB3ZWF0aGVyc2l0ID09IDEgfiAiY2xlYXIiLA0KICAgICAgd2VhdGhlcnNpdCA9PSAyIH4gIm1pc3QiLA0KICAgICAgd2VhdGhlcnNpdCA9PSAzIH4gImxpZ2h0IHByZWNpcGl0YXRpb24iLA0KICAgICAgd2VhdGhlcnNpdCA9PSA0IH4gImhlYXZ5IHByZWNpcGl0YXRpb24iDQogICAgKSwNCiAgICB3ZWF0aGVyc2l0ID0gZmN0X3JlbGV2ZWwod2VhdGhlcnNpdCwgImNsZWFyIiwgIm1pc3QiLCAibGlnaHQgcHJlY2lwaXRhdGlvbiIsICJoZWF2eSBwcmVjaXBpdGF0aW9uIikNCiAgKQ0KYGBgDQoNClJlY29kaW5nIHdhcm5pbmcNCkF0IHRoaXMgcG9pbnQsIHlvdSBtaWdodCB3b25kZXIgd2hhdCB0aGlzIHdhcm5pbmcgbWVhbnM6DQoNCmBXYXJuaW5nOiBVbmtub3duIGxldmVscyBpbiBgZmA6IGhlYXZ5IHByZWNpcGl0YXRpb25gDQpUaGlzIGlzIHNpbXBseSBSIHdhcm5pbmcgdXMgdGhhdCB3aGlsZSBpdCBpcyBwb3NzaWJsZSBmb3IgdGhlIHdlYXRoZXJzaXQgdmFyaWFibGUgdG8gaGF2ZSB0aGUgdmFsdWUgNCBmb3IgaGVhdnkgcHJlY2lwaXRhdGlvbiwgdGhpcyBuZXZlciBhY3R1YWxseSBvY2N1cnMgaW4gdGhlIGRhdGEuIENvbnNlcXVlbnRseSwgdGhlIHdlYXRoZXJzaXQgZmFjdG9yIG9ubHkgaGFzIHRocmVlIGxldmVscy4NCg0KIyMjQ3JlYXRpbmcgbmV3IHZhcmlhYmxlcw0KDQojI0NyZWF0ZSByYXcgdmFsdWVzIGZvciB0ZW1wZXJhdHVyZSwgaHVtaWRpdHksIGFuZCB3aW5kc3BlZWQNCkNhbGN1bGF0ZSByYXcgdGVtcGVyYXR1cmUsIGZlZWxpbmcgdGVtcGVyYXR1cmUsIGh1bWlkaXR5LCBhbmQgd2luZHNwZWVkIGFzIHRoZWlyIHZhbHVlcyBnaXZlbiBpbiB0aGUgZGF0YXNldCBtdWx0aXBsaWVkIGJ5IHRoZSBtYXhpbXVtIHJhdyB2YWx1ZXMgc3RhdGVkIGluIHRoZSBjb2RlYm9vayBmb3IgZWFjaCB2YXJpYWJsZS4gSW5zdGVhZCBvZiB3cml0aW5nIG92ZXIgdGhlIGV4aXN0aW5nIHZhcmlhYmxlcywgY3JlYXRlIG5ldyBvbmVzIGNhbGxlZCB0ZW1wZXJhdHVyZV9yYXcsIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3LCBodW1pZGl0eV9yYXcsIHdpbmRzcGVlZF9yYXcuDQoNCmBgYHtyfQ0KZGNiaWtlc2hhcmUgPC0gZGNiaWtlc2hhcmUgJT4lDQogIG11dGF0ZSgNCiAgICB0ZW1wZXJhdHVyZV9yYXcgPSB0ZW1wICogNDEsDQogICAgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgPSBhdGVtcCAqIDUwLA0KICAgIGh1bWlkaXR5X3JhdyA9IGh1bSAqIDEwMCwNCiAgICB3aW5kc3BlZWRfcmF3ID0gd2luZHNwZWVkICogNjcNCiAgKQ0KYGBgDQoNCiMjQ2hlY2sgY250IHZhcmlhYmxlDQpDaGVjayB0aGF0IHRoZSBzdW0gb2YgY2FzdWFsIGFuZCByZWdpc3RlcmVkIGFkZHMgdXAgdG8gY250IGZvciBlYWNoIHJlY29yZC4gRG8gdGhpcyBieSBjcmVhdGluZyBhIG5ldyBjb2x1bW4gdGhhdCB0YWtlcyBvbiB0aGUgdmFsdWUgVFJVRSBpZiB0aGV5IGFkZCB1cCBhbmQgRkFMU0UgaWYgbm90LCBhbmQgdGhlbiBjaGVja2luZyBpZiBhbGwgdmFsdWVzIGluIHRoYXQgY29sdW1uIGFyZSBUUlVFcy4NCmBgYHtyfQ0KZGNiaWtlc2hhcmUgJT4lDQogIG11dGF0ZShjYXNfcGx1c19yZWcgPSBjYXN1YWwgKyByZWdpc3RlcmVkKSAlPiUNCiAgc3VtbWFyaXNlKGFsbF96ZXJvID0gYWxsKGNhc19wbHVzX3JlZyA9PSBjbnQpKQ0KYGBgDQoNCiMjI0Jpa2UgcmVudGFscyBhbmQgdGVtcGVyYXR1cmUNCg0KIyNSZWNyZWF0ZSBWaXN1YWxpemF0aW9uDQpgYGB7cn0NCmRjYmlrZXNoYXJlICU+JQ0KICBnZ3Bsb3QobWFwcGluZyA9IGFlcyh4ID0gZHRlZGF5LCB5ID0gY250LCBjb2xvciA9IGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3KSkgKw0KICAgIGdlb21fcG9pbnQoYWxwaGEgPSAwLjcpICsNCiAgICBsYWJzKA0KICAgICAgdGl0bGUgPSAiQmlrZSByZW50YWxzIGluIERDLCAyMDExIGFuZCAyMDEyIiwNCiAgICAgIHN1YnRpdGxlID0gIldhcm1lciB0ZW1wZXJhdHVyZXMgYXNzb2NpYXRlZCB3aXRoIG1vcmUgYmlrZSByZW50YWxzIiwNCiAgICAgIHggPSAiRGF0ZSIsDQogICAgICB5ID0gIkJpa2UgcmVudGFscyIsDQogICAgICBjb2xvciA9ICJUZW1wZXJhdHVyZSAoQykiDQogICAgKSArDQogIHRoZW1lX21pbmltYWwoKQ0KYGBgDQoNCiMjQmlrZSByZW50YWxzIHZzIHRlbXBlcmF0dXJlDQpGaXQgYSBsaW5lYXIgbW9kZWwgcHJlZGljdGluZyB0b3RhbCBkYWlseSBiaWtlIHJlbnRhbHMgZnJvbSByYXcgZGFpbHkgdGVtcGVyYXR1cmUgYW5kIGFuc3dlciB0aGUgcXVlc3Rpb25zIGJlbG93Lg0KYGBge3J9DQpjbnRfdG1wIDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHRlbXBlcmF0dXJlX3JhdywgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KY250X3RtcCAlPiUNCiAgdGlkeSgpDQpgYGANCg0KVXNlIHRoZSBjaHVuayBiZWxvdyB0byBwcmludCBvdXQgdGhlIFJeMiBvZiB0aGUgbW9kZWwNCmBgYHtyfQ0KZ2xhbmNlKGNudF90bXApJHIuc3F1YXJlZA0KYGBgDQoNCiMjQmlrZSByZW50YWxzIHZzIGZlZWxpbmcgdGVtcGVyYXR1cmUNCkZpdCBhbm90aGVyIGxpbmVhciBtb2RlbCBwcmVkaWN0aW5nIHRvdGFsIGRhaWx5IGJpa2UgcmVudGFscyBmcm9tIHJhdyBkYWlseSBmZWVsaW5nIHRlbXBlcmF0dXJlLiBUaGVuLCBwcm9jZWVkIHRvIGFuc3dlcmluZyB0aGUgcXVlc3Rpb25zIGJlbG93DQpgYGB7cn0NCmNudF9hdG1wIDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3LCBkYXRhID0gZGNiaWtlc2hhcmUpDQpjbnRfYXRtcCAlPiUNCiAgdGlkeSgpDQpgYGANCg0KVXNlIHRoZSBjaHVuayBiZWxvdyB0byBwcmludCBvdXQgdGhlIFIyIG9mIHRoZSBtb2RlbC4NCmBgYHtyfQ0KZ2xhbmNlKGNudF9hdG1wKSRyLnNxdWFyZWQNCmBgYA0KDQojIyNGdWxsIG1vZGVsDQpGaXQgYSBtb2RlbCBwcmVkaWN0aW5nIHRvdGFsIGRhaWx5IGJpa2UgcmVudGFscyBmcm9tIHNlYXNvbiwgeWVhciwgd2hldGhlciB0aGUgZGF5IGlzIGhvbGlkYXkgb3Igbm90LCB3aGV0aGVyIHRoZSBkYXkgaXMgYSB3b3JraW5nZGF5IG9yIG5vdCwgdGhlIHdlYXRoZXIgY2F0ZWdvcnksIHRlbXBlcmF0dXJlLCBmZWVsaW5nIHRlbXBlcmF0dXJlLCBodW1pZGl0eSwgYW5kIHdpbmRzcGVlZCwgYXMgd2VsbCBhcyB0aGUgaW50ZXJhY3Rpb24gYmV0d2VlbiBmZWVsaW5nIHRlbXBlcmF0dXJlIGFuZCBob2xpZGF5Lg0KYGBge3J9DQpjbnRfZnVsbCA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24gKyB5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQp0aWR5KGNudF9mdWxsKQ0KYGBgDQoNClJlY29yZCBhZGp1c3RlZCBSMiBvZiB0aGUgbW9kZWwuDQpgYGB7cn0NCmdsYW5jZShjbnRfZnVsbCkkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCiMjI0JhY2t3YXJkIHNlbGVjdGlvbg0KUGVyZm9ybSB0aGUgZmlyc3Qgc3RlcCBvZiBiYWNrd2FyZCBzZWxlY3Rpb24gYnkgZml0dGluZyBhIHNlcmllcyBvZiBtb2RlbHMsIGVhY2ggd2l0aCBvbmUgZXhwbGFuYXRvcnkgdmFyaWFibGUgcmVtb3ZlZCBmcm9tIHRoZSBmdWxsIG1vZGVsIHlvdSBmaXQgaW4gdGhlIHByZXZpb3VzIGV4ZXJjaXNlLiBSZWNvcmQgdGhlIGFkanVzdGVkIFIycyBvZiBlYWNoIG9mIHRoZXNlIG1vZGVscy4NCg0KSW4gdGhlIGNodW5rIGJlbG93LCBmaXQgdGhlIGZ1bGwgbW9kZWwgd2l0aG91dCB0aGUgc2Vhc29uIHZhcmlhYmxlIGFuZCBwcmludCBvdXQgdGhlIFIyIHNjb3JlLg0KYGBge3J9DQpybV9zZWFzb24gPC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250IH4geXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArIHdlYXRoZXJzaXQgKw0KICAgICAgICB0ZW1wZXJhdHVyZV9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyArIGh1bWlkaXR5X3JhdyArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX3NlYXNvbikkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCkluIHRoZSBjaHVuayBiZWxvdywgZml0IHRoZSBmdWxsIG1vZGVsIHdpdGhvdXQgdGhlIHllYXIgdmFyaWFibGUgYW5kIHByaW50IG91dCB0aGUgYWRqdXN0ZWQgUjIgc2NvcmUuDQpgYGB7cn0NCnJtX3llYXIgPC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250IH4gc2Vhc29uK2hvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1feWVhcikkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCkluIHRoZSBjaHVuayBiZWxvdywgZml0IHRoZSBmdWxsIG1vZGVsIHdpdGhvdXQgdGhlIGhvbGlkYXkgdmFyaWFibGUgYW5kIHByaW50IG91dCB0aGUgYWRqdXN0ZWQgUjIgc2NvcmUuIFJlbWVtYmVyIHRvIGFsc28gcmVtb3ZlIHRoZSBpbnRlcmFjdGlvbiBlZmZlY3QgYmV0d2VlbiBob2xpZGF5IGFuZCBmZWVsaW5nX3RlbXBlcmF0dXJlX3Jhdy4NCmBgYHtyfQ0Kcm1faG9saWRheSA8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24gKyB5ciArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICsNCiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgKyBodW1pZGl0eV9yYXcgKw0KICAgICAgICB3aW5kc3BlZWRfcmF3LCANCiAgICAgIGRhdGEgPSBkY2Jpa2VzaGFyZSkNCmdsYW5jZShybV9ob2xpZGF5KSRhZGouci5zcXVhcmVkDQpgYGANCg0KRml0IHRoZSBmdWxsIG1vZGVsIHdpdGhvdXQgdGhlIHdvcmtpbmdkYXkgdmFyaWFibGUgdXNpbmcgdGhlIGNvZGUgY2h1bmsgYmVsb3chIFJlbWVtYmVyIHRvIHJlY29yZCB0aGUgYWRqdXN0ZWQgUjIgc2NvcmUuDQpgYGB7cn0NCnJtX3dvcmtpbmdkYXk8LSBsaW5lYXJfcmVnKCkgJT4lDQogIHNldF9lbmdpbmUoImxtIikgJT4lDQogIGZpdChjbnQgfiBzZWFzb24raG9saWRheSArIHlyICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1fd29ya2luZ2RheSkkYWRqLnIuc3F1YXJlZA0KDQpgYGANCg0KRml0IHRoZSBmdWxsIG1vZGVsIHdpdGhvdXQgdGhlIHdlYXRoZXJzaXQgdmFyaWFibGUgaW4gdGhlIGNodW5rIGJlbG93IGFuZCByZWNvcmQgdGhlIGFkanVzdGVkIFIyIHNjb3JlLg0KYGBge3J9DQpybV93ZWF0aGVyc2l0PC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250fiBzZWFzb24reXIgKyBob2xpZGF5ICsgd29ya2luZ2RheSArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1fd2VhdGhlcnNpdCkkYWRqLnIuc3F1YXJlZA0KYGBgDQoNClJlbW92ZSB0aGUgdGVtcGVyYXR1cmVfcmF3IHZhcmlhYmxlIGluIHRoZSBjaHVuayBiZWxvdyBhbmQgcmVjb3JkIHRoZSBhZGp1c3RlZCBSMiBzY29yZQ0KYGBge3J9DQpybV90ZW1wX3JhdzwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1fdGVtcF9yYXcpJGFkai5yLnNxdWFyZWQNCmBgYA0KDQpJbiB0aGUgY2h1bmsgYmVsb3csIGZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyB2YXJpYWJsZSBhbmQgcmVjb3JkIHRoZSBhZGp1c3RlZCBSMiBzY29yZS4gRG9u4oCZdCBmb3JnZXQgdG8gYWxzbyByZW1vdmUgdGhlIGludGVyYWN0aW9uIGVmZmVjdCBiZXR3ZWVuIGhvbGlkYXkgYW5kIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3IQ0KYGBge3J9DQpybV9mZWVsdGVtcF9yYXcgPC0gbGluZWFyX3JlZygpICU+JQ0KICBzZXRfZW5naW5lKCJsbSIpICU+JQ0KICBmaXQoY250IH4gc2Vhc29uK3lyICsgaG9saWRheSArIHdvcmtpbmdkYXkgKyB3ZWF0aGVyc2l0ICsNCiAgICAgICAgdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdywgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1fZmVlbHRlbXBfcmF3KSRhZGouci5zcXVhcmVkDQpgYGANCg0KRml0IHRoZSBmdWxsIG1vZGVsIHdpdGhvdXQgdGhlIGh1bWlkaXR5X3JhdyB2YXJpYWJsZSBhbmQgcmVjb3JkIHRoZSBhZGp1c3RlZCBSMiBzY29yZS4NCmBgYHtyfQ0Kcm1faHVtaWRpdHlfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICArDQogICAgICAgIHdpbmRzcGVlZF9yYXcgKyBmZWVsaW5nX3RlbXBlcmF0dXJlX3JhdyAqIGhvbGlkYXksIA0KICAgICAgZGF0YSA9IGRjYmlrZXNoYXJlKQ0KZ2xhbmNlKHJtX2h1bWlkaXR5X3JhdykkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCkZpdCB0aGUgZnVsbCBtb2RlbCB3aXRob3V0IHRoZSB3aW5kc3BlZWRfcmF3IHZhcmlhYmxlIGFuZCByZWNvcmQgdGhlIGFkanVzdGVkIFIyIHNjb3JlLg0KYGBge3J9DQpybV93aW5kc3BlZWRfcmF3IDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICogaG9saWRheSwgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1fd2luZHNwZWVkX3JhdykkYWRqLnIuc3F1YXJlZA0KYGBgDQoNCkxhc3QsIHJlbW92ZSB0aGUgaW50ZXJhY3Rpb24gZWZmZWN0IGJldHdlZW4gaG9saWRheSBhbmQgZmVlbGluZ190ZW1wZXJhdHVyZV9yYXcgd2l0aG91dCByZW1vdmluZyB0aGUgdHdvIHZhcmlhYmxlcyBpbmRpdmlkdWFsbHkuIFRoZW4sIHJlY29yZCB0aGUgYWRqdXN0ZWQgUjIuDQpgYGB7cn0NCnJtX2ludGVyYWN0aW9uIDwtIGxpbmVhcl9yZWcoKSAlPiUNCiAgc2V0X2VuZ2luZSgibG0iKSAlPiUNCiAgZml0KGNudCB+IHNlYXNvbit5ciArIGhvbGlkYXkgKyB3b3JraW5nZGF5ICsgd2VhdGhlcnNpdCArDQogICAgICAgIHRlbXBlcmF0dXJlX3JhdyArIGZlZWxpbmdfdGVtcGVyYXR1cmVfcmF3ICsgaHVtaWRpdHlfcmF3ICsNCiAgICAgICAgd2luZHNwZWVkX3JhdywgDQogICAgICBkYXRhID0gZGNiaWtlc2hhcmUpDQpnbGFuY2Uocm1faW50ZXJhY3Rpb24pJGFkai5yLnNxdWFyZWQNCmBgYA0KDQoNCmBgYHtyfQ0KbGlicmFyeShyZWFkeGwpDQpkZjEgPC0gcmVhZF9leGNlbCgiVTovRFMyNDEvMjAyMDA4LWNhcGl0YWxiaWtlc2hhcmUtdHJpcGRhdGEueGxzeCIpDQpgYGANCg0KIyMjUmlkZXJzaGlwIHZzIHRpbWUNCmBgYHtyfQ0KZGY0PWRmMSAlPiUgDQogIHNlbGVjdChyaWRlYWJsZV90eXBlLCBzdGFydD1zdGFydGVkX2F0LCBlbmQ9ZW5kZWRfYXQpICU+JQ0KICBwaXZvdF9sb25nZXIoY29scz1zdGFydDplbmQsbmFtZXNfdG89InR5cGUiLCB2YWx1ZXNfdG89InRpbWUiKSAlPiUNCiAgYXJyYW5nZSh0aW1lKSAlPiUNCiAgbXV0YXRlKGluYz1jYXNlX3doZW4oDQogICAgdHlwZT09InN0YXJ0IiB+IDEsDQogICAgdHlwZT09ImVuZCIgfiAtMQ0KICApLCByaWRlcnM9Y3Vtc3VtKGluYykpDQoNCmBgYA0KDQpDYW4gd2UgcGxvdCBvdmVyIHRoZSBlbnRpcmUgbW9udGg/DQpgYGB7cn0NCmRmNCAlPiUgbXV0YXRlKGRheT1kYXkodGltZSkpICU+JQ0KICBnZ3Bsb3QoYWVzKHRpbWUsIHJpZGVycykpK2dlb21fcG9pbnQoc2l6ZT0uNSwgYWxwaGE9LjAyKStmYWNldF93cmFwKH5kYXkpDQoNCmBgYA0K</div>
 
 
 

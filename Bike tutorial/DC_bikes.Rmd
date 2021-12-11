@@ -11,7 +11,6 @@ library(tidyverse)
 library(tidymodels)
 library(dsbox)
 library(readxl)
-bikes <- read_excel("U:/DS241/202008-capitalbikeshare-tripdata.xlsx")
 
 ```
 
@@ -19,6 +18,13 @@ bikes <- read_excel("U:/DS241/202008-capitalbikeshare-tripdata.xlsx")
 The data include daily bike rental counts (by members and casual users) of Capital Bikeshare in Washington, DC in 2011 and 2012 as well as weather information on these days. The data is contained in the dsbox package and is called dcbikeshare.
 
 The original data sources are http://capitalbikeshare.com/system-data and http://www.freemeteo.com.
+
+Since the file is too large to upload to GitHub, you will need to download the file from the website listed above and edit the code to correspond with where the file is stored on your machine
+
+```{r}
+bikes <- read_excel("U:/DS241/202008-capitalbikeshare-tripdata.xlsx")
+```
+
 
 ###Recode Data
 
@@ -300,7 +306,7 @@ df4=df1 %>%
 
 ```
 
-Can we plot over the entire month
+Can we plot over the entire month?
 ```{r}
 df4 %>% mutate(day=day(time)) %>%
   ggplot(aes(time, riders))+geom_point(size=.5, alpha=.02)+facet_wrap(~day)
