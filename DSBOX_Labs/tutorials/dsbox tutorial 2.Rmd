@@ -1,0 +1,86 @@
+---
+title: "DSbox tutorial 2"
+author: "Brenna Kokosenski"
+output: html_document
+---
+In this document, the Road Traffic Accidentds tutorial from Data Science in a Box is completed. The tutorial can be found at https://minecr.shinyapps.io/dsbox-02-accidents/
+
+The goals of this tutorial include practising data visualization skills with ggplot2, filtering data, and creating new variables using the mutate function.
+
+
+# Load Packages
+In this document, we use the tidyverse and dsbox packages.
+```{r}
+library(tidyverse)
+library(dsbox)
+```
+
+# Data
+The data is called accidents and is found in the dsbox package. The glimpse function can be used to view the data
+```{r}
+glimpse(accidents)
+```
+Each row in the dataset contains all information relating to an individual recorded accident in Edinburgh.
+
+How many accidents were recorded in Edinburgh in 2018? 
+```{r}
+nrow(accidents)
+```
+
+There are 768 rows, therefore, 768 accidents were recorded in Edinburgh in 2018.
+
+How many variables are recorded on these crashes?
+```{r}
+ncol(accidents)
+```
+
+#Multi-vehicle accidents
+How many accidents with 2 or more vehicles occurred in an urban area? 
+```{r}
+accidents %>% filter(vehicles>=2, urban_rural==2) %>% nrow()
+```
+There were 72 accidents with 2 or more vehicles in urban areas
+
+
+#Speed limits
+We will now create a frequency table of the speed limits at which accidents happen 
+```{r}
+accidents%>%
+  count(speed_limit)
+
+```
+
+The most common speed limit in the dataset is 20
+
+#Accident severity (Visualization)
+Recreate the given plot
+```{r}
+ggplot(data = accidents, aes(x = severity, fill = light)) +
+  geom_bar(position = "fill") +
+  #flips the coordinates
+  coord_flip() +
+  labs(y = "Proportion", x = "Accident severity",
+       fill = "Light condition", 
+       title = "Light condition and accident severity") +
+  scale_fill_viridis_d()
+```
+
+Recreate the same figure, but this time change the labels of the crash severity variable such that the dashes in the labels don’t show up. There are many ways to do this, but in this tutorial, we’ll focus on changing how the data are represented in the light variable using mutate(). Note that the colours in the figure might change, but that’s ok.
+```{r}
+accidents <- accidents %>%
+  mutate(light = case_when(
+    light == "Daylight" ~ "Daylight",
+    light == "Darkness - lights lit"       ~ "Darkness, lights lit",
+    light == "Darkness - lights unlit"     ~ "Darkness, lights unlit", 
+    light == "Darkness - no lighting"      ~ "Darkness, no lighting", 
+    light == "Darkness - lighting unknown" ~ "Darkness, lighting unknown"
+    ))
+ggplot(data = accidents, aes(x = severity, fill = light)) +
+  geom_bar(position = "fill") +
+  coord_flip() +
+  labs(y = "Proportion", x = "Accident severity",
+       fill = "Light condition", 
+       title = "Light condition and accident severity") +
+  scale_fill_viridis_d()
+```
+

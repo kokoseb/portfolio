@@ -1,0 +1,168 @@
+---
+title: "dsbox tutorial 7"
+author: "Brenna Kokosenski"
+output: html_document
+---
+This document involves the completion of tutorial 7 from Data Scienec in a Box, which can be found here: https://minecr.shinyapps.io/dsbox-07-exploregss/
+
+The learning goals of this tutorial are:
+- Work on your data manipulation skills.
+- Fit linear models with multiple predictors.
+- Interpret regression output.
+
+##Introduction
+The General Social Survey (GSS) gathers data on contemporary American society in order to monitor and explain trends and constants in attitudes, behaviors, and attributes. Hundreds of trends have been tracked since 1972. In addition, since the GSS adopted questions from earlier surveys, trends can be followed for up to 70 years.
+
+The GSS contains a standard core of demographic, behavioral, and attitudinal questions, plus topics of special interest. Among the topics covered are civil liberties, crime and violence, intergroup tolerance, morality, national spending priorities, psychological well-being, social mobility, and stress and traumatic events.
+
+In this assignment we analyze data from the 2016 GSS, using it to estimate values of population parameters of interest about US adults.
+
+##Packages
+In this assignment we will work with the following packages:
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(dsbox)
+```
+##Data
+In this tutorial, we will work with the 2016 GSS data.
+
+The data are available as part of the **dsbox** package we just loaded; the data frame is called `gss16`.
+
+##Harrassment at Work
+In 2016, the GSS added a new question on harrassment at work. 
+The question is phrased as the following:
+
+>*Over the past five years, have you been harassed by your superiors or co-workers at your job, for example, have you experienced any bullying, physical or psychological abuse?*
+
+Determine how many people answered yes to the question:
+```{r}
+gss16 %>%
+  filter(harass5 == "Yes") %>%
+  nrow()
+```
+
+##Time spent on Email:
+The 2016 GSS also asked respondents how many hours and minutes they spend on email weekly. The responses to these questions are recorded in the emailhr and emailmin variables. For example, if the response is 2.5 hrs, this would be recorded as emailhr = 2 and emailmin = 30
+
+Using the following code block, create a new variable called email that combines these two variables to report the number of minutes the respondents spend on email weekly.
+
+```{r}
+gss16 <- gss16 %>%
+  mutate(email = (emailhr*60)+emailmin)
+```
+
+ find the mean and median number of minutes respondents spend on email weekly.
+```{r}
+gss16 %>%
+  summarise(
+    mean = mean(email, na.rm = TRUE)
+  )
+
+gss16 %>%
+  summarise(
+    median = median(email, na.rm = TRUE)
+  )
+
+```
+
+Since the distribution is skewed, we need a measure that is resistant to outliers - i.e. the median.
+
+##Social Media
+Create another new variable, snap_insta that is coded as “Yes” if the respondent reported using either of Snapchat (snapchat) or Instagram (instagrm), and “No” if not. If the recorded value was NA for both of these questions, the value in your new variable should also be NA
+```{r}
+gss16 <- gss16 %>%
+  mutate(snap_insta = if_else(snapchat == "Yes" | instagrm == "Yes",
+    "Yes", "No"
+  ))
+```
+
+ 
+ Now, count how many respondents fall into each category of possible values for the snap_insta variable (which were “Yes”, “No”, and NA).
+```{r}
+gss16 %>%
+  count(snap_insta)
+```
+ 
+###Employment Status
+What are the possible responses to the question
+>*Last week were you working full time, part time, going to school, keeping house, or what?* 
+and how many respondents chose each of these answers? 
+Note that this information is stored in the `wrkstat` variable.
+
+```{r}
+gss16 %>%
+  count(wrkstat)
+```
+
+##Modeling
+Fit a model predicting email (number of minutes per week spent on email) from educ (number of years of education), wrkstat, and snap_insta
+```{r}
+email_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(email ~ educ + wrkstat + snap_insta, data = gss16)
+
+tidy(email_fit)
+```
+
+###Residual Plot
+To test the suitability of a linear model, we create a residual plot showing the residuals against fitted values for the model and data. To help with this, we use the augment() function, also from the tidymodels package.
+```{r}
+email_aug <- augment(email_fit$fit)
+```
+
+Now, use the m_aug tibble as the dataset for creating the desired residual plot.
+```{r}
+ggplot(data = email_aug, aes(x = .fitted, y = .resid)) +
+  geom_point()
+```
+
+##Political views and science
+The 2016 GSS also asked respondents whether they think of themselves as liberal or conservative (polviews) and whether they think science research is necessary and should be supported by the federal government (advfront).
+
+The question on science research is worded as follows:
+
+Even if it brings no immediate benefits, scientific research that advances the frontiers of knowledge is necessary and should be supported by the federal government.
+
+And possible responses to this question are Strongly agree, Agree, Disagree, Strongly disagree, Dont know, No answer, Not applicable.
+
+The question on political views is worded as follows:
+
+We hear a lot of talk these days about liberals and conservatives. I’m going to show you a seven-point scale on which the political views that people might hold are arranged from extremely liberal–point 1–to extremely conservative–point 7. Where would you place yourself on this scale?
+
+And possible responses to this question are Extremely liberal, Liberal, Slightly liberal, Moderate, Slghtly conservative, Conservative, Extrmly conservative. Responses that were originally Don’t know, No answer and Not applicable are already mapped to NAs upon data import.
+
+Note that the levels of this variables are spelled inconsistently: "Extremely liberal" vs. "Extrmly conservative". Since this is the spelling that shows up in the data, you need to make sure this is how you spell the levels in your code.
+
+In a new variable - call it advfront2 - recode advfront such that Strongly agree and Agree are mapped to "Yes", and Disagree and Strongly disagree are mapped to "No".
+```{r}
+gss16 <- gss16 %>%
+  mutate(
+    advfront2 = case_when(
+      advfront %in% c("Strongly agree", "Agree") ~ "Yes",
+      advfront %in% c("Disagree", "Strongly disagree") ~ "No",
+      TRUE ~ advfront
+    ))
+```
+
+In a new variable, recode polviews such that Extremely liberal, Liberal, and Slightly liberal, are mapped to "Liberal", and Slghtly conservative, Conservative, and Extrmly conservative disagree are mapped to "Conservative". The remaining levels can be left as is. Arrange the levels so they are in the order “Conservative”, “Moderate”, “Liberal”. Don’t overwrite the existing polviews, instead, let’s call the new variable polviews2.
+```{r}
+gss16 <- gss16 %>%
+  mutate(
+    polviews2 = case_when(
+      polviews %in% c("Extremely liberal", "Liberal", "Slightly liberal") ~ "Liberal",
+      polviews %in% c("Extrmly conservative", "Conservative", "Slghtly conservative") ~ "Conservative",
+      TRUE                                             ~ polviews
+    ),
+    polviews2 = fct_relevel(polviews2, "Conservative", "Moderate", "Liberal")
+  )
+```
+
+For the final exercise in this tutorial, create a visualization that displays the relationship between these two new variables. You’ll need to remove all NA values from both variables, and the particular visualisation we’re going to create is a filled bar plot.
+```{r}
+gss16 %>%
+  filter(!is.na(polviews2), !is.na(advfront2)) %>%
+  ggplot(aes(x = polviews2, fill = advfront2)) +
+  geom_bar(position = "fill")
+```
+

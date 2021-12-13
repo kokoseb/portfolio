@@ -1,0 +1,250 @@
+---
+title: "dsbox tutorial 5"
+author: "Brenna Kokosenski"
+output: html_document
+---
+I nhis document, we completes the fifth tutorial from Data Science in a Box, which can be found here:https://minecr.shinyapps.io/dsbox-05-moneyinpolitics/#section-introduction
+
+The learning goals for this tutorial inclue getting started with scraping data from the web, and continuing to build data cleaning and visualization skills.
+
+##Introducion
+Every election cycle brings its own brand of excitement – and lots of money. Political donations are of particular interest to political scientists and other researchers studying politics and voting patterns. They are also of interest to citizens who want to stay informed of how much money their candidates raise and where that money comes from.
+
+In the United States, “only American citizens (and immigrants with green cards) can contribute to federal politics, but the American divisions of foreign companies can form political action committees (PACs) and collect contributions from their American employees.” 
+
+In this assignment we will scrape and work with data foreign connected PACs that donate to political campaigns in the United States. We will begin by scraping the data for foreign connected PAC contributions in the 2020 election cycle.
+
+In order to complete this assignment you will need a Chrome browser with the Selector Gadget extension installed.
+
+##Packages 
+In this assignment we will work with the following packages: tidyverse and scales, and robotstxt and rvest for web scraping. We also use the dsbox package for pre-scraped data. You can load them with the following:
+```{r}
+library(tidyverse)
+library(robotstxt)
+library(rvest)
+library(scales)
+library(dsbox)
+```
+##Data collection via web scraping
+The data come from OpenSecrets.org, a “website tracking the influence of money on U.S. politics, and how that money affects policy and citizens’ lives”. This website is hosted by The Center for Responsive Politics, which is a nonpartisan, independent nonprofit that “tracks money in U.S. politics and its effect on elections and public policy.” (Source)
+
+Before getting started, let’s check that a bot has permissions to access pages on this domain. This function comes from the robotstxt package and it checks if a bot (or a web scraper like you!) has permissions to access the webpage. If the function returns TRUE, then the answer is “yes”, you’re technically allowed to scrape the webpage.
+```{r}
+paths_allowed("https://www.opensecrets.org")
+
+```
+
+The goal of this tutorial is to recreate a given data frame.
+
+Since the data are already formatted as a table, we can use the html_table() function to extract it out of the page. Note that this function has some useful arguments like header (to indicate whether the first row of the table should be used as header) and fill (to indicate whether rows with fewer than the maximum number of columns should be filled with NA).
+
+###Scraping 2020 contributions
+Let’s begin by scraping the data for 2020 PAC contributions, one step at a time.
+
+First, we define a new variable that stores the URL of the page we want to scrape data from as a character string:
+```{r}
+url_2020 <- "https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2020"
+```
+
+###Read the webpage
+Next, we use the read_html() function to read the HTML data from the webpage:
+```{r}
+page <- read_html(url_2020)
+```
+
+###Introducing Selector Gadget
+We’ll be using the Selector Gadget extension at lot while web scraping, as it easily allows us to pick out HTML tags of interest. These tags are then used by the rvest package to pick out (i.e. scrape) the data we’re interested in from the webpage.
+
+###Pick out the data
+First, we identify the HTML node for the entire table..DataTable-Partial covers the whole section of the page containing the required table.This will therefore be used as the argument in the html_node() function.
+
+The second function that will help us scrape the data is html_table() (unsurprising since we’re dealing with, well, a HTML table). We then use Selector Gadget again to identify which tag(s) identify the table.
+
+For example, we can see that the .sorting tag picks out the title row of the table
+
+###Header and fill
+Now, recall the header and fill arguments that were mentioned earlier. Header and fill should both be true
+
+###Bringin it all together
+Now that we’ve planned which bits of the page we’re going to be scraping data from, it’s time to perform the scrape.
+
+In order to convert data to a tibble, we’ll use the as_tibble() function from the tidyverse package. 
+```{r}
+pac_2020 <- page %>%
+  html_node(".DataTable-Partial") %>%
+  html_table("td", header = TRUE, fill = TRUE) %>%
+  as_tibble()
+```
+
+###Glimpse our new dataset
+```{r}
+glimpse(pac_2020)
+```
+
+###Clean names
+The names of the variables in the pac_2020 data frame are somewhat ill-formed. Rename the variables to the following: name, country_parent, total, dems, repubs. Note that dems is short for Democrats and repubs is short for Republicans, the two major parties in the US.
+```{r}
+pac_2020 <- pac_2020 %>%
+  rename(
+    name = `PAC Name (Affiliate)` ,
+    country_parent = `Country of Origin/Parent Company`,
+    total = Total,
+    dems = Dems,
+    repubs = Repubs
+  )
+```
+
+###Glimpse again
+```{r}
+glimpse(pac_2020)
+```
+
+That’s pretty good but the name variable looks pretty messy. There is lots of white space between the name and the affliate in parantheses. But remember, we have a string manipulation function that removes pesky white spaces: str_squish(). For the final data cleaning exercise (for now!), fix up the name variable using this function.
+```{r}
+pac_2020 <- pac_2020 %>%
+  mutate(name = str_squish(name))
+```
+
+###One last glimpse
+```{r}
+glimpse(pac_2020)
+```
+
+##Data cleaning
+To start, use the following code block to find the number of observations and variables in the pac_2020 data frame
+```{r}
+nrow(pac_2020)
+ncol(pac_2020)
+
+```
+
+###Foreign-connected PAC contributions for all years
+As you can see from the Opensecrets.org website, there is data available on PAC contributions from years other than 2020. We’d like to incorporate this data into our analysis too, but to save time we’ll use the dataset scraped earlier.
+
+The data is available in the dsbox package as pac_all_raw. This data frame has the same fields as the pac_2020 dataframe, with one added called year which  stores the year of the contribution data, since we are no longer dealing with PAC contributions from only one year.
+
+###Cleaning pac_all_raw
+In this section we clean the pac_all_raw data frame to prepare it for analysis and visualization. We have two goals in data cleaning:
+
+Separate the country_parent into two such that country and parent company appear in different columns for country-level analysis.
+Convert contribution amounts in total, dems, and repubs from character strings to numeric values.
+
+###Country and parent fields
+First, let’s use the separate() function to separate country_parent into country and parent columns. Note that country and parent company names are separated by / (which we’ll need to specify) and also note that there are some entries where the / sign appears twice and in these cases we want to only split the value at the first occurrence of /.
+
+This can be accomplished by setting the extra argument to “merge” so that the cell is split into only 2 segments, e.g. we want “Denmark/Novo Nordisk A/S” to be split into “Denmark” and “Novo Nordisk A/S”.
+
+```{r}
+pac_all_raw <- pac_all_raw %>%
+  separate(country_parent, into = c("country", "parent"), sep = "/", extra = "merge")
+
+```
+
+### Convert monetary values to numeric
+Next, we want to convert the values of the total, dems and repubs fields to numerical values, which means removing the dollar signs at the start and the commas within the numbers.
+
+To do this, there are a few functions that can help us: str_remove() and str_remove_all() can remove certain characters or patterns of characters from a string, and the as.numeric() function converts (or at least tries to convert) strings and other variable types into numeric values.
+
+Since we have to apply this cleaning to all three fields, let’s write a function to do so. Remember that a function is just a packaged set of instructions (i.e. piece of code) that’s easy to reuse - without copying and pasting!
+
+Let’s start building our function: we’ll call it parse_currency
+```{r}
+parse_currency <- function(x){
+  x %>% 
+    str_remove("\\$") %>%
+    str_remove_all(",") %>%
+    as.numeric()
+}
+```
+
+### Using the function
+Now, we can combine the parse_currency() function with mutate() to apply it to the values in the data frame:
+```{r}
+pac_all <- pac_all_raw %>%
+  mutate(
+    total = parse_currency(total),
+    dems = parse_currency(dems),
+    repubs = parse_currency(repubs)
+  )
+```
+
+###Glimpse 
+```{r}
+glimpse(pac_all)
+```
+
+##Data Visualization
+First off in this section, we're going to create a line plot of total contributions from all foreign-connected PACs in the UK and Canada over the years.  
+
+For this, we're going to be following these steps:
+- Filter for only `Canada` and `UK`.
+- Calculate sum of total contributions from PACs for each year for each country by using a sequence of `group_by()` then `summarise()`.
+- Make a plot of total contributions (y-axis) by year (x-axis) where two lines identified by different colors represent each of Canada and UK.
+```{r}
+pac_all %>%
+  filter(country %in% c("Canada", "UK")) %>%
+  group_by(country, year) %>%
+  summarise(tot = sum(total), .groups = "drop") %>%
+  ggplot(aes(x = year, y = tot, group = country, color = country)) +
+  geom_line()
+```
+
+### Builing a plot
+the remainder of the tutorial works towards recreating the given chart
+
+First, we need to filter the data for UK contributions:
+```{r}
+pac_all %>%
+  filter(country == "UK")
+```
+
+Next, we need to calculate total contributions to Democratic and Republican parties from all UK-connected PACs each year. 
+This requires a `group_by()` and `summarise()` step:
+```{r}
+pac_all %>%
+  filter(country == "UK") %>%
+  group_by(year) %>%
+  summarise(
+    Democrat = sum(dems),
+    Republican = sum(repubs),
+    .groups = "drop"
+  )
+```
+We need the table to look a bit different:with two rows per yeat, one for contributions to the democratic party and the other for the republican party
+
+```{r}
+pac_all_final <- pac_all %>%
+  filter(country == "UK") %>%
+  group_by(year) %>%
+  summarise(
+    Democrat = sum(dems),
+    Republican = sum(repubs),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = c(Democrat, Republican), 
+    names_to = "party", 
+    values_to = "amount"
+    )
+```
+
+##Plotting
+
+```{r}
+pac_all_final %>%
+  ggplot(mapping = aes(x = year, y = amount, color = party)) +
+  geom_line()+
+  scale_color_manual(values = c("blue", "red"))+ #makes the line for democrats blue and republicans red
+scale_y_continuous(labels = label_dollar(scale = 0.000001, suffix = "M"))+ #reformats y axis to dollar scale
+  #add proper labels:
+  labs(
+    x = "Year",
+    y = "Amount",
+    color = "Party",
+    title = "Contribution to US politics from UK-Connected PACs",
+    subtitle = "By party, over time"
+  )+
+  theme_minimal() #selects the minimalist theme to make certain aspects of the plot simpler
+```
+
+
